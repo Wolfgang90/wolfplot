@@ -246,7 +246,7 @@ class Plot:
         return ax
 
 
-    def _create_histogram(self,ax, y,bins,buckets):
+    def _create_histogram(self,ax, x,bins,buckets):
 
         ax = self._set_x(ax, x_pos=buckets)
 
@@ -256,7 +256,7 @@ class Plot:
         ax.grid(axis=self.griddirection,which=self.grid_ticktype) 
         
         # Create data part of the chart
-        ax.hist(y, bins)
+        ax.hist(x, bins)
         
         return ax
     
@@ -341,7 +341,7 @@ class Plot:
             # Determine number of y-values and create vector representing y-Axis
             buckets = np.arange(bins[0],bins[1],bins[2]).tolist()     
 
-            ax = self._create_histogram(ax,y,bins_,buckets)
+            ax = self._create_histogram(ax,x,bins_,buckets)
         
         
         """
