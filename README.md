@@ -1,6 +1,6 @@
 # wolfplot
 ## Purpose
-`wolfplot` is a high-level plotting framework for `python` built on top of `matplotlib`. It is primarily designed for the use in process mining projects
+`wolfplot` is a high-level plotting framework for `python` built on top of `matplotlib`. It is primarily designed for the use in process mining projects.
 
 ## Getting started
 In order do initialize your work environment, clone or download wolfplot onto your machine.
