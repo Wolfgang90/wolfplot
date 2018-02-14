@@ -41,7 +41,7 @@ class Plot:
                  y_horizontal_alignment="right",
                  
                  grid_ticktype="major",
-                 griddirection="y",
+                 grid_direction="y",
                  bins = None):
         
         """
@@ -71,7 +71,7 @@ class Plot:
             
             grid_ticktype (type: string): describes whether grid lines are displayed on the major or the minor ticks 
                                           (possible: 'major', 'minor'; default: major)
-            griddirection (type: string): describes whether grid lines are displayed on x, y or both ticks 
+            grid_direction (type: string): describes whether grid lines are displayed on x, y or both ticks 
                                           (possible: 'x','y','xy'; default: 'y')
             bins (type: tuple(<lower end>,<higher end>,<bin width>)):
     
@@ -95,7 +95,7 @@ class Plot:
         self.y_minor_tick_width =y_minor_tick_width
         self.y_rotation = y_rotation
         self.y_horizontal_alignment = y_horizontal_alignment
-        self.griddirection = griddirection
+        self.grid_direction = grid_direction
         self.grid_ticktype = grid_ticktype       
 
         if bins:
@@ -210,14 +210,12 @@ class Plot:
         # Determine number of y-values and create vector representing y-Axis
         x_pos = np.arange(len(keys)).tolist()
 
-        print(x_pos)
-        print(keys.tolist())
         ax = self._set_x(ax, x_pos=x_pos, x_ticklabels = keys.tolist())  
 
         ax = self._set_y(ax) 
         
         # Set grid lines
-        ax.grid(axis=self.griddirection,which=self.grid_ticktype)
+        ax.grid(axis=self.grid_direction,which=self.grid_ticktype)
            
         # Remove y-axis spine
         #ax.spines['bottom'].set_visible(False)
@@ -248,7 +246,7 @@ class Plot:
         ax = self._set_y(ax, y_pos=y_pos, y_ticklabels = keys.tolist())
         
         # Set grid lines
-        ax.grid(axis=self.griddirection,which=self.grid_ticktype)
+        ax.grid(axis=self.grid_direction,which=self.grid_ticktype)
 
         # Remove y-axis spine
         #ax.spines['left'].set_visible(False)
@@ -268,7 +266,7 @@ class Plot:
         ax = self._set_y(ax)
         
         # Set grid lines
-        ax.grid(axis=self.griddirection,which=self.grid_ticktype) 
+        ax.grid(axis=self.grid_direction,which=self.grid_ticktype) 
         
         # Create data part of the chart
         ax.hist(x, self.bins)
@@ -289,7 +287,7 @@ class Plot:
         
         
         # Set grid lines
-        ax.grid(axis=self.griddirection,which=self.grid_ticktype)        
+        ax.grid(axis=self.grid_direction,which=self.grid_ticktype)        
         
         # Create graph
         ax.scatter(x ,y, label=data_label, s = 3, linewidth = 0.0)
@@ -320,6 +318,8 @@ class Plot:
             data (type: pandas.core.series.Series): Keys as labels and values as bars
         """
         keys, values, minimum, maximum = self._series_to_arrays(data)
+        print(keys)
+        print(values)
         if self.y_lim == None:
             self.y_lim = (0,self._set_axis_maximum(maximum))
 
@@ -329,14 +329,14 @@ class Plot:
         ax = self._create_bar(ax, keys, values)    
         self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
 
-    def plot_hbar(self, data, griddirection="x"):
+    def plot_hbar(self, data, grid_direction="x"):
         """
             Input parameters:
             data (type: pandas.core.series.Series): Keys as labels and values as bars
-            griddirection(type:string): x, y, or xy
+            grid_direction(type:string): x, y, or xy
         """
         keys, values, minimum, maximum = self._series_to_arrays(data, ascending = True)
-        self.griddirection = self.griddirection
+        self.grid_direction = self.grid_direction
         if self.x_lim == None:
             self.x_lim = (0,self._set_axis_maximum(maximum))
 

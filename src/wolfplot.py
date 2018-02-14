@@ -210,8 +210,6 @@ class Plot:
         # Determine number of y-values and create vector representing y-Axis
         x_pos = np.arange(len(keys)).tolist()
 
-        print(x_pos)
-        print(keys.tolist())
         ax = self._set_x(ax, x_pos=x_pos, x_ticklabels = keys.tolist())  
 
         ax = self._set_y(ax) 
