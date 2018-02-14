@@ -216,7 +216,7 @@ class Plot:
         ax.grid(axis=self.griddirection,which=self.grid_ticktype)
            
         # Remove y-axis spine
-        ax.spines['bottom'].set_visible(False)
+        #ax.spines['bottom'].set_visible(False)
         # set lengths of y-tick parameters to 0
         ax.tick_params(axis='x', length=0)
 
@@ -247,7 +247,7 @@ class Plot:
         ax.grid(axis=self.griddirection,which=self.grid_ticktype)
 
         # Remove y-axis spine
-        ax.spines['left'].set_visible(False)
+        #ax.spines['left'].set_visible(False)
         # set lengths of y-tick parameters to 0
         ax.tick_params(axis='y', length=0)
 
