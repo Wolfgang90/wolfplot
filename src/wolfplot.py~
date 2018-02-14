@@ -318,8 +318,6 @@ class Plot:
             data (type: pandas.core.series.Series): Keys as labels and values as bars
         """
         keys, values, minimum, maximum = self._series_to_arrays(data)
-        print(keys)
-        print(values)
         if self.y_lim == None:
             self.y_lim = (0,self._set_axis_maximum(maximum))
 

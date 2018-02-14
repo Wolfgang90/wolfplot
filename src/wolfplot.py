@@ -355,7 +355,7 @@ class Plot:
             y (type: numpy-array): y-values
             data_label (type: numpy-arra): contains the labels for the data in plots with multiple data which will either be 
                                            displayed in the legend(fig_kind="single") or the title (fig_kind="multiple")
-            fig_type (type: string): Describes the figure to be plotted (possible: 'bar', 'hbar', 'hist', 'scatter')
+            fig_type (type: string): Describes the figure to be plotted (possible: 'hist', 'scatter')
             fig_kind (type: string): Describes whether data should be plotted on one or on multiple graphs
                                      (possible: 'single', 'multiple'; default: 'single')
             regression (type: bool): Describes whether a regression line should be plotted in the graph (default: False)
@@ -386,12 +386,6 @@ class Plot:
          
         
         
-        if fig_type == "bar":
-            ax = self._create_bar(ax,x[0],y)    
-
-        if fig_type == "hbar":
-            ax = self._create_hbar(ax,x[0],y)
-
         if fig_type == "hist":
 
             ax = self._create_histogram(ax,x)
