@@ -39,7 +39,7 @@ class Plot:
                  yhorizontalalignment="right",
                  
                  grid_ticktype="major",
-                 griddirection="y",
+                 griddirection="y"
                  bins = None):
         
         """
