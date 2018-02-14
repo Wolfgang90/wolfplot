@@ -13,6 +13,8 @@ import matplotlib.pyplot as plt
 # Import MultipleLocator from matplotlib ticker for creating tick marks
 from matplotlib.ticker import MultipleLocator
 
+import math
+
 
 
 
@@ -200,15 +202,17 @@ class Plot:
 
         return ax
 
-    def _create_bar(self, ax, x_data,y_data):
+    def _create_bar(self, ax, keys, values):
 
          # Set x-number format to None as there are no numbers on the axis
         self.x_number_format = None
         
         # Determine number of y-values and create vector representing y-Axis
-        x_pos = np.arange(len(x_data)).tolist()
+        x_pos = np.arange(len(keys)).tolist()
 
-        ax = self._set_x(ax, x_pos=x_pos, x_ticklables = x_data.tolist())  
+        print(x_pos)
+        print(keys.tolist())
+        ax = self._set_x(ax, x_pos=x_pos, x_ticklables = keys.tolist())  
 
         ax = self._set_y(ax) 
         
@@ -221,27 +225,27 @@ class Plot:
         ax.tick_params(axis='x', length=0)
 
         # Create data part of the chart
-        ax.bar(x_pos, y_data,1)
+        ax.bar(x_pos, values,1)
         
         return ax
 
 
 
 
-    def _create_hbar(self, ax, x_data,y_data):
+    def _create_hbar(self, ax, keys, values):
 
         # Set y-number format to None as there are no numbers on the axis
         self.y_number_format = None
 
         # Determine number of y-values and create vector representing y-Axis
-        y_pos = np.arange(len(y_data)).tolist()
+        y_pos = np.arange(len(keys)).tolist()
 
 
         # Format x-axis    
         ax = self._set_x(ax)
 
 
-        ax = self._set_y(ax, y_pos=y_pos, y_ticklables = y_data.tolist())
+        ax = self._set_y(ax, y_pos=y_pos, y_ticklables = keys.tolist())
         
         # Set grid lines
         ax.grid(axis=self.griddirection,which=self.grid_ticktype)
@@ -252,7 +256,7 @@ class Plot:
         ax.tick_params(axis='y', length=0)
 
         # Create data part of the chart
-        ax.barh(y_pos, x_data,1)
+        ax.barh(y_pos, values,1)
 
         return ax
 
@@ -296,6 +300,53 @@ class Plot:
             
         
         return ax
+
+    def _series_to_arrays(self, pd_series, ascending = False):
+        pd_series = pd_series.value_counts(ascending=ascending)
+        keys = pd_series.keys().values
+        values = pd_series.values
+        minimum = pd_series.min()
+        maximum = pd_series.max()
+        return keys, values, minimum, maximum
+
+    def _set_axis_maximum(self,maximum):
+        maximum_axis = (math.ceil(maximum/(10**(len(str(int(maximum)))-1)))) * (10**(len(str(int(maximum)))-1))
+        return maximum_axis
+
+
+    def plot_bar(self, data):
+        """
+            Input parameters:
+            data (type: pandas.core.series.Series): Keys as labels and values as bars
+        """
+        keys, values, minimum, maximum = self._series_to_arrays(data)
+        if self.y_lim == None:
+            self.y_lim = (0,self._set_axis_maximum(maximum))
+
+        if self.y_tick_width == None:
+            self.y_tick_width = self.y_lim[1]/10
+        self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
+        ax = self._create_bar(ax, keys, values)    
+        self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
+
+    def plot_hbar(self, data, griddirection="x"):
+        """
+            Input parameters:
+            data (type: pandas.core.series.Series): Keys as labels and values as bars
+            griddirection(type:string): x, y, or xy
+        """
+        keys, values, minimum, maximum = self._series_to_arrays(data, ascending = True)
+        self.griddirection = self.griddirection
+        if self.x_lim == None:
+            self.x_lim = (0,self._set_axis_maximum(maximum))
+
+        if self.x_tick_width == None:
+            self.x_tick_width = self.x_lim[1]/10
+        self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
+        ax = self._create_hbar(ax, keys, values)    
+        self.fig.subplots_adjust(bottom=0.2, left=0.35, top=0.95, right=0.95)
+
+
     
     def plot_data(self,x = np.empty([1]),y = None, data_label = None, fig_type = None,fig_kind="single", 
                   regression = False):
