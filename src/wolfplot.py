@@ -22,11 +22,11 @@ class Plot:
     def __init__(self, 
                  width = 6, 
                  height = 4.5, 
-                 xlable = "", 
+                 x_label = "", 
                  x_lim=None, 
                  x_tick_width = None, 
                  x_minor_tick_width = None,              
-                 ylable="", 
+                 y_label="", 
                  y_lim=None, 
                  y_tick_width = None, 
                  y_minor_tick_width = None,
@@ -34,27 +34,27 @@ class Plot:
                  
                  
                  x_number_format = "{:,}",
-                 xrotation=45, 
-                 xhorizontalalignment="right", 
+                 x_rotation=45, 
+                 x_horizontal_alignment="right", 
                  y_number_format = "{:,}",
-                 yrotation=0, 
-                 yhorizontalalignment="right",
+                 y_rotation=0, 
+                 y_horizontal_alignment="right",
                  
                  grid_ticktype="major",
-                 griddirection="y",
+                 grid_direction="y",
                  bins = None):
         
         """
             Input parameters:
             width (type: float): width of overall figure (default: 6)
             height (type: float): height of overall figure (default: 4.5)
-            xlable(type: string): label displayed on the x-axis (default: empty string)
+            x_label(type: string): label displayed on the x-axis (default: empty string)
             x_lim (type: tuple): limits for x-axis in the format (lower limit, upper limit)
             x_tick_width (type: float): width of the major x-tick labels (default: None)
             x_minor_tick_width (type: float): width of the minor x-tick labels, which should be a possible divider 
                                               of the major tick width (default: None)
 
-            ylable(type: string): label displayed on the y-axis (default: empty string)
+            y_label(type: string): label displayed on the y-axis (default: empty string)
             y_lim (type: tuple): limits for x-axis in the format (lower limit, upper limit)
             y_tick_width (type: float): width of the major y-tick labels (default: None)
             y_minor_tick_width (type: float): width of the minor y-tick labels, which should be a possible divider 
@@ -71,7 +71,7 @@ class Plot:
             
             grid_ticktype (type: string): describes whether grid lines are displayed on the major or the minor ticks 
                                           (possible: 'major', 'minor'; default: major)
-            griddirection (type: string): describes whether grid lines are displayed on x, y or both ticks 
+            grid_direction (type: string): describes whether grid lines are displayed on x, y or both ticks 
                                           (possible: 'x','y','xy'; default: 'y')
             bins (type: tuple(<lower end>,<higher end>,<bin width>)):
     
@@ -81,21 +81,21 @@ class Plot:
         # Initialize variables
         self.width = width
         self.height = height
-        self.xlable = xlable
+        self.x_label = x_label
         self.x_number_format = x_number_format
         self.x_lim = x_lim
         self.x_tick_width = x_tick_width
         self.x_minor_tick_width = x_minor_tick_width
-        self.xrotation = xrotation
-        self.xhorizontalalignment = xhorizontalalignment
-        self.ylable = ylable
+        self.x_rotation = x_rotation
+        self.x_horizontal_alignment = x_horizontal_alignment
+        self.y_label = y_label
         self.y_number_format = y_number_format
         self.y_lim = y_lim
         self.y_tick_width = y_tick_width
         self.y_minor_tick_width =y_minor_tick_width
-        self.yrotation = yrotation
-        self.yhorizontalalignment = yhorizontalalignment
-        self.griddirection = griddirection
+        self.y_rotation = y_rotation
+        self.y_horizontal_alignment = y_horizontal_alignment
+        self.grid_direction = grid_direction
         self.grid_ticktype = grid_ticktype       
 
         if bins:
@@ -136,12 +136,12 @@ class Plot:
         return ax
 
 
-    def _set_x(self, ax, x_pos=None, x_ticklables=None):
-        ax.set_xlabel(self.xlable)
+    def _set_x(self, ax, x_pos=None, x_ticklabels=None):
+        ax.set_xlabel(self.x_label)
         if x_pos:
             ax.set_xticks(x_pos)
-        if x_ticklables:
-            ax.set_xticklabels(x_ticklables)
+        if x_ticklabels:
+            ax.set_xticklabels(x_ticklabels)
         if self.x_lim:
             ax.set_xlim(self.x_lim[0], self.x_lim[1], auto=False)
 
@@ -161,19 +161,19 @@ class Plot:
 
 
         # Set the x-ticklabels to 45 degrees and align them right
-        plt.setp(ax.get_xticklabels(), rotation=self.xrotation, horizontalalignment=self.xhorizontalalignment)
+        plt.setp(ax.get_xticklabels(), rotation=self.x_rotation, horizontalalignment=self.x_horizontal_alignment)
 
         return ax
     
 
-    def _set_y(self, ax, y_pos=None,y_ticklables=None, y_axis = True):
+    def _set_y(self, ax, y_pos=None,y_ticklabels=None, y_axis = True):
         if y_axis:
-            ax.set_ylabel(self.ylable)
+            ax.set_ylabel(self.y_label)
         if y_pos:
             ax.set_yticks(y_pos)
 
-        if y_ticklables and y_axis:
-            ax.set_yticklabels(y_ticklables)
+        if y_ticklabels and y_axis:
+            ax.set_yticklabels(y_ticklabels)
 
         if self.y_lim:
             ax.set_ylim(self.y_lim[0], self.y_lim[1], auto=False)
@@ -195,7 +195,7 @@ class Plot:
 
         # Set the x-ticklabels to 45 degrees and align them right
         if y_axis:
-            plt.setp(ax.get_yticklabels(), rotation=self.yrotation, horizontalalignment=self.yhorizontalalignment)
+            plt.setp(ax.get_yticklabels(), rotation=self.y_rotation, horizontalalignment=self.y_horizontal_alignment)
         
         if not y_axis:
             ax.get_yaxis().set_ticklabels([])
@@ -212,12 +212,12 @@ class Plot:
 
         print(x_pos)
         print(keys.tolist())
-        ax = self._set_x(ax, x_pos=x_pos, x_ticklables = keys.tolist())  
+        ax = self._set_x(ax, x_pos=x_pos, x_ticklabels = keys.tolist())  
 
         ax = self._set_y(ax) 
         
         # Set grid lines
-        ax.grid(axis=self.griddirection,which=self.grid_ticktype)
+        ax.grid(axis=self.grid_direction,which=self.grid_ticktype)
            
         # Remove y-axis spine
         #ax.spines['bottom'].set_visible(False)
@@ -245,10 +245,10 @@ class Plot:
         ax = self._set_x(ax)
 
 
-        ax = self._set_y(ax, y_pos=y_pos, y_ticklables = keys.tolist())
+        ax = self._set_y(ax, y_pos=y_pos, y_ticklabels = keys.tolist())
         
         # Set grid lines
-        ax.grid(axis=self.griddirection,which=self.grid_ticktype)
+        ax.grid(axis=self.grid_direction,which=self.grid_ticktype)
 
         # Remove y-axis spine
         #ax.spines['left'].set_visible(False)
@@ -268,7 +268,7 @@ class Plot:
         ax = self._set_y(ax)
         
         # Set grid lines
-        ax.grid(axis=self.griddirection,which=self.grid_ticktype) 
+        ax.grid(axis=self.grid_direction,which=self.grid_ticktype) 
         
         # Create data part of the chart
         ax.hist(x, self.bins)
@@ -289,7 +289,7 @@ class Plot:
         
         
         # Set grid lines
-        ax.grid(axis=self.griddirection,which=self.grid_ticktype)        
+        ax.grid(axis=self.grid_direction,which=self.grid_ticktype)        
         
         # Create graph
         ax.scatter(x ,y, label=data_label, s = 3, linewidth = 0.0)
@@ -329,14 +329,14 @@ class Plot:
         ax = self._create_bar(ax, keys, values)    
         self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
 
-    def plot_hbar(self, data, griddirection="x"):
+    def plot_hbar(self, data, grid_direction="x"):
         """
             Input parameters:
             data (type: pandas.core.series.Series): Keys as labels and values as bars
-            griddirection(type:string): x, y, or xy
+            grid_direction(type:string): x, y, or xy
         """
         keys, values, minimum, maximum = self._series_to_arrays(data, ascending = True)
-        self.griddirection = self.griddirection
+        self.grid_direction = self.grid_direction
         if self.x_lim == None:
             self.x_lim = (0,self._set_axis_maximum(maximum))
 
