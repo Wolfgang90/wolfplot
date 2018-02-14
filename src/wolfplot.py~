@@ -39,7 +39,7 @@ class Plot:
                  yhorizontalalignment="right",
                  
                  grid_ticktype="major",
-                 griddirection="y"
+                 griddirection="y",
                  bins = None):
         
         """
@@ -71,7 +71,7 @@ class Plot:
                                           (possible: 'major', 'minor'; default: major)
             griddirection (type: string): describes whether grid lines are displayed on x, y or both ticks 
                                           (possible: 'x','y','xy'; default: 'y')
-            bins (type: tuple(<>,<>,<>)):
+            bins (type: tuple(<lower end>,<higher end>,<bin width>)):
     
         """
         
@@ -391,7 +391,6 @@ class Plot:
         else:
             self.fig.subplots_adjust(bottom=0.2, left=0.35, top=0.95, right=0.95)
 
-        return self.fig
 
     def save_figure(self, path):
         """
