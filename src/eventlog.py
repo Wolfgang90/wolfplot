@@ -27,3 +27,18 @@ class EventLog:
         
         # Load csv
         self.eventlog = pd.read_csv(self.path_ev, sep, encoding = encoding, converters={convert: to_datetime})
+
+    def merge_headers(dataframe, seperator = "_"):
+        """
+            Merges headers of a dataframe obeject if they have multiple layers
+            Input parameters:
+            seperator(type: String): String by which the header should be seperated
+        """
+        new_columns = []
+        for i, x in enumerate(dataframe.columns.ravel()):
+            if x[1]=="":
+                new_columns.append(x[0])
+            else:
+                new_columns.append(seperator.join(x))
+        dataframe.columns = new_columns
+        return dataframe
