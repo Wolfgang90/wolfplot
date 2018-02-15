@@ -14,7 +14,8 @@ Once downloaded one can create a `.ipynb` file in the `wolfplot` directory, open
 
 To import all required packages into the notebook, make sure to execute the following in the first code cell:
 
-```from src.eventlog import EventLog
+```
+from src.eventlog import EventLog
 from src.wolfplot import Plot
 
 import numpy as np
