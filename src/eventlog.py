@@ -14,7 +14,7 @@ class EventLog:
     """
         Loads eventlog data
     """            
-    def load_eventlog(self, sep = ",", encoding="utf-8", convert_format='%d.%m.%y %H:%M:%S',convert = None):
+    def load_eventlog(self, sep = ",", encoding="utf-8", convert_format='%d.%m.%y %H:%M:%S',convert = "Endzeitpunkt"):
         filename, file_extension = os.path.splitext(self.path_ev)
         if file_extension == '.csv':
             self._load_csv(sep,encoding, convert_format, convert)
