@@ -1,11 +1,3 @@
-"""
-TODOs:
-- Boxplots (however I have included a simple example for self building in our style in the example file)
-- Graphs with multiple data for: bar, hbar, hist (currently implemented for one data layer (compare example file))
-- Write documentation for subfunctions
-"""
-
-
 import numpy as np
 import pandas as pd
 from sklearn import linear_model
@@ -136,30 +128,40 @@ class Plot:
         return ax
 
 
-    def _set_x(self, ax, axis_pos=None, axis_ticklabels=None, axis = "x"):
+    def _set_axis(self, ax, axis_pos=None, axis_ticklabels=None, axis = "x", axis_plot = True):
 
-        # Set axis label
-        exec("ax.set_" + axis + "label(self." + axis + "_label)")
+        if axis_plot:
+
+            # Set axis label
+            exec("ax.set_" + axis + "label(self." + axis + "_label)")
+        
+            # Set position of tick labels
+            if axis_ticklabels:
+                exec("ax.set_" + axis + "ticklabels(axis_ticklabels)")
+            # Set 1000-seperator
+            if eval("self." + axis + "_number_format"):
+                if axis == "x":
+                    ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda x, loc: self.x_number_format.format(int(x)).replace(",","x").replace(".",",").replace("x",".")))
+                if axis == "y":
+                    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, loc: self.y_number_format.format(int(x)).replace(",","x").replace(".",",").replace("x",".")))
+
+            # Set orientation and alignment of axis tick labels
+            exec("plt.setp(ax.get_" + axis + "ticklabels(), rotation=self." + axis + "_rotation, horizontalalignment=self." + axis + "_horizontal_alignment)")
+
+        elif not axis_plot:
+            exec("ax.get_" + axis + "axis().set_ticklabels([])")
+
+
 
         # Set position of axis ticks (required for axis with ordinal data)
         if axis_pos:
             exec("ax.set_" + axis + "ticks(axis_pos)")
-
-        # Set position of tick labels
-        if axis_ticklabels:
-            exec("ax.set_" + axis + "ticklabels(axis_ticklabels)")
 
         # Set axis lower and upper limit
         if eval("self." + axis + "_lim"):
             exec("ax.set_" + axis + "lim(self." + axis + "_lim[0], self." + axis + "_lim[1], auto=False)")
 
         
-        # Set 1000-seperator
-        if eval("self." + axis + "_number_format"):
-            if axis == "x":
-                ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda x, loc: self.x_number_format.format(int(x)).replace(",","x").replace(".",",").replace("x",".")))
-            if axis == "y":
-                ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, loc: self.y_number_format.format(int(x)).replace(",","x").replace(".",",").replace("x",".")))
 
 
         # Set axis major tick width
@@ -175,47 +177,9 @@ class Plot:
             exec("ax." + axis + "axis.set_minor_locator(minorLocator)")
 
 
-        # Set orientation and alignment of axis tick labels
-        exec("plt.setp(ax.get_" + axis + "ticklabels(), rotation=self." + axis + "_rotation, horizontalalignment=self." + axis + "_horizontal_alignment)")
-
         return ax
     
 
-    def _set_y(self, ax, y_pos=None,y_ticklabels=None, y_axis = True):
-        if y_axis:
-            ax.set_ylabel(self.y_label)
-        if y_pos:
-            ax.set_yticks(y_pos)
-
-        if y_ticklabels and y_axis:
-            ax.set_yticklabels(y_ticklabels)
-
-        if self.y_lim:
-            ax.set_ylim(self.y_lim[0], self.y_lim[1], auto=False)
-
-        # Set 1000-seperator
-        if self.y_number_format and y_axis:
-            ax.yaxis.set_major_formatter(plt.FuncFormatter((lambda x, loc: self.y_number_format.format(int(x)).replace(",","x").replace(".",",").replace("x","."))))
-            
-
-        if self.y_tick_width:
-            if not self.y_lim:
-                print("y_lim is missing and required to set y_tick_width")
-            # Set major x-ticks
-            ax.set_yticks(np.arange(self.y_lim[0], self.y_lim[1]+1, self.y_tick_width))
-
-        if self.y_minor_tick_width:
-            minorLocator = MultipleLocator(self.y_minor_tick_width)
-            ax.yaxis.set_minor_locator(minorLocator)
-
-        # Set the x-ticklabels to 45 degrees and align them right
-        if y_axis:
-            plt.setp(ax.get_yticklabels(), rotation=self.y_rotation, horizontalalignment=self.y_horizontal_alignment)
-        
-        if not y_axis:
-            ax.get_yaxis().set_ticklabels([])
-
-        return ax
 
     def _create_bar(self, ax, keys, values):
 
@@ -225,15 +189,13 @@ class Plot:
         # Determine number of y-values and create vector representing y-Axis
         x_pos = np.arange(len(keys)).tolist()
 
-        ax = self._set_x(ax, axis_pos=x_pos, axis_ticklabels = keys.tolist())  
-
-        ax = self._set_y(ax) 
+        # Set x and y axis
+        ax = self._set_axis(ax, axis_pos=x_pos, axis_ticklabels = keys.tolist(), axis="x")  
+        ax = self._set_axis(ax, axis="y") 
         
         # Set grid lines
         ax.grid(axis=self.grid_direction,which=self.grid_ticktype)
            
-        # Remove y-axis spine
-        #ax.spines['bottom'].set_visible(False)
         # set lengths of y-tick parameters to 0
         ax.tick_params(axis='x', length=0)
 
@@ -255,17 +217,13 @@ class Plot:
         y_pos = np.arange(len(keys)).tolist()
 
 
-        # Format x-axis    
-        ax = self._set_x(ax)
-
-
-        ax = self._set_y(ax, y_pos=y_pos, y_ticklabels = keys.tolist())
+        # Set x and y axis
+        ax = self._set_axis(ax, axis = "x")
+        ax = self._set_axis(ax, axis_pos=y_pos, axis_ticklabels = keys.tolist(), axis = "y")
         
         # Set grid lines
         ax.grid(axis=self.grid_direction,which=self.grid_ticktype)
 
-        # Remove y-axis spine
-        #ax.spines['left'].set_visible(False)
         # set lengths of y-tick parameters to 0
         ax.tick_params(axis='y', length=0)
 
@@ -276,10 +234,10 @@ class Plot:
 
 
     def _create_histogram(self,ax,x):
-
-        ax = self._set_x(ax, axis_pos=self.buckets)
-
-        ax = self._set_y(ax)
+        
+        # Set x and y axis
+        ax = self._set_axis(ax, axis_pos=self.buckets)
+        ax = self._set_axis(ax)
         
         # Set grid lines
         ax.grid(axis=self.grid_direction,which=self.grid_ticktype) 
@@ -289,17 +247,17 @@ class Plot:
         
         return ax
     
-    def _create_scatter(self, ax, x, y, data_label = None, title = False, y_axis = True, regression = False):
+    def _create_scatter(self, ax, x, y, data_label = None, title = False, y_axis_plot = True, regression = False):
         
         if title:
             ax = self._set_title(ax, data_label)
             
         
        
-        ax = self._set_x(ax)
+        ax = self._set_axis(ax)
         
         
-        ax = self._set_y(ax, y_axis = y_axis)
+        ax = self._set_axis(ax, axis_plot = y_axis_plot)
         
         
         # Set grid lines
