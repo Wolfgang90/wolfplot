@@ -136,32 +136,47 @@ class Plot:
         return ax
 
 
-    def _set_x(self, ax, x_pos=None, x_ticklabels=None):
-        ax.set_xlabel(self.x_label)
-        if x_pos:
-            ax.set_xticks(x_pos)
-        if x_ticklabels:
-            ax.set_xticklabels(x_ticklabels)
-        if self.x_lim:
-            ax.set_xlim(self.x_lim[0], self.x_lim[1], auto=False)
+    def _set_x(self, ax, axis_pos=None, axis_ticklabels=None, axis = "x"):
 
+        # Set axis label
+        exec("ax.set_" + axis + "label(self." + axis + "_label)")
+
+        # Set position of axis ticks (required for axis with ordinal data)
+        if axis_pos:
+            exec("ax.set_" + axis + "ticks(axis_pos)")
+
+        # Set position of tick labels
+        if axis_ticklabels:
+            exec("ax.set_" + axis + "ticklabels(axis_ticklabels)")
+
+        # Set axis lower and upper limit
+        if eval("self." + axis + "_lim"):
+            exec("ax.set_" + axis + "lim(self." + axis + "_lim[0], self." + axis + "_lim[1], auto=False)")
+
+        
         # Set 1000-seperator
-        if self.x_number_format:
-            ax.xaxis.set_major_formatter(plt.FuncFormatter((lambda x, loc: self.x_number_format.format(int(x)).replace(",","x").replace(".",",").replace("x","."))))
-
-        if self.x_tick_width:
-            if not self.x_lim:
-                print("x_lim is missing and required to set x_tick_width")
-            # Set major x-ticks
-            ax.set_xticks(np.arange(self.x_lim[0], self.x_lim[1]+1, self.x_tick_width))
-
-        if self.x_minor_tick_width:
-            minorLocator = MultipleLocator(self.x_minor_tick_width)
-            ax.xaxis.set_minor_locator(minorLocator)
+        if eval("self." + axis + "_number_format"):
+            if axis == "x":
+                ax.xaxis.set_major_formatter(plt.FuncFormatter(lambda x, loc: self.x_number_format.format(int(x)).replace(",","x").replace(".",",").replace("x",".")))
+            if axis == "y":
+                ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, loc: self.y_number_format.format(int(x)).replace(",","x").replace(".",",").replace("x",".")))
 
 
-        # Set the x-ticklabels to 45 degrees and align them right
-        plt.setp(ax.get_xticklabels(), rotation=self.x_rotation, horizontalalignment=self.x_horizontal_alignment)
+        # Set axis major tick width
+        if eval("self." + axis + "_tick_width"):
+            if not eval("self." + axis + "_lim"):
+                print(axis + "_lim is missing and required to set " + axis + "_tick_width")
+            # Set major ticks
+            exec("ax.set_" + axis + "ticks(np.arange(self." + axis + "_lim[0], self." + axis + "_lim[1]+1, self." + axis + "_tick_width))")
+
+        # Set axis minor tick width
+        if eval("self." + axis +  "_minor_tick_width"):
+            exec("minorLocator = MultipleLocator(self." + axis + "_minor_tick_width)")
+            exec("ax." + axis + "axis.set_minor_locator(minorLocator)")
+
+
+        # Set orientation and alignment of axis tick labels
+        exec("plt.setp(ax.get_" + axis + "ticklabels(), rotation=self." + axis + "_rotation, horizontalalignment=self." + axis + "_horizontal_alignment)")
 
         return ax
     
@@ -210,7 +225,7 @@ class Plot:
         # Determine number of y-values and create vector representing y-Axis
         x_pos = np.arange(len(keys)).tolist()
 
-        ax = self._set_x(ax, x_pos=x_pos, x_ticklabels = keys.tolist())  
+        ax = self._set_x(ax, axis_pos=x_pos, axis_ticklabels = keys.tolist())  
 
         ax = self._set_y(ax) 
         
@@ -234,6 +249,7 @@ class Plot:
 
         # Set y-number format to None as there are no numbers on the axis
         self.y_number_format = None
+
 
         # Determine number of y-values and create vector representing y-Axis
         y_pos = np.arange(len(keys)).tolist()
@@ -259,9 +275,9 @@ class Plot:
         return ax
 
 
-    def _create_histogram(self,ax, x):
+    def _create_histogram(self,ax,x):
 
-        ax = self._set_x(ax, x_pos=self.buckets)
+        ax = self._set_x(ax, axis_pos=self.buckets)
 
         ax = self._set_y(ax)
         
@@ -327,7 +343,7 @@ class Plot:
         ax = self._create_bar(ax, keys, values)    
         self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
 
-    def plot_hbar(self, data, grid_direction="x"):
+    def plot_hbar(self, data):
         """
             Input parameters:
             data (type: pandas.core.series.Series): Keys as labels and values as bars
@@ -343,6 +359,14 @@ class Plot:
         self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
         ax = self._create_hbar(ax, keys, values)    
         self.fig.subplots_adjust(bottom=0.2, left=0.35, top=0.95, right=0.95)
+
+
+
+    def plot_hist(self, data):
+        _, values, minimum, maximum = self._series_to_arrays(data)
+        self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
+        ax = self._create_histogram(ax,values)
+        self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
 
 
     
