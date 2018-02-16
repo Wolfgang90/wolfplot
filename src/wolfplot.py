@@ -128,7 +128,7 @@ class Plot:
         return ax
 
 
-    def _set_axis(self, ax, axis_pos=None, axis_ticklabels=None, axis = "x", axis_plot = True):
+    def _set_axis(self, ax, axis_pos=None, axis_ticklabels=None, axis = None, axis_plot = True):
 
         if axis_plot:
 
@@ -236,8 +236,8 @@ class Plot:
     def _create_histogram(self,ax,x):
         
         # Set x and y axis
-        ax = self._set_axis(ax, axis_pos=self.buckets)
-        ax = self._set_axis(ax)
+        ax = self._set_axis(ax, axis_pos=self.buckets, axis="x")
+        ax = self._set_axis(ax, axis = "y")
         
         # Set grid lines
         ax.grid(axis=self.grid_direction,which=self.grid_ticktype) 
@@ -291,7 +291,10 @@ class Plot:
             Input parameters:
             data (type: pandas.core.series.Series): Keys as labels and values as bars
         """
-        keys, values, minimum, maximum = self._series_to_arrays(data)
+        if type(data) == pd.core.series.Series:
+            keys, values, minimum, maximum = self._series_to_arrays(data)
+        else:
+            print("wolfplot does currently not support the provided type " + type(data).__name__ + " for barplots. Please use the pandas-type Series")
         if self.y_lim == None:
             self.y_lim = (0,self._set_axis_maximum(maximum))
 
@@ -307,8 +310,12 @@ class Plot:
             data (type: pandas.core.series.Series): Keys as labels and values as bars
             grid_direction(type:string): x, y, or xy
         """
-        keys, values, minimum, maximum = self._series_to_arrays(data, ascending = True)
-        self.grid_direction = self.grid_direction
+        if type(data) == pd.core.series.Series:
+            keys, values, minimum, maximum = self._series_to_arrays(data, ascending = True)
+        else:
+            print("wolfplot does currently not support the provided type " + type(data).__name__ + " for hbarplots. Please use the pandas-type Series")
+        if self.y_lim == None:
+            self.grid_direction = self.grid_direction
         if self.x_lim == None:
             self.x_lim = (0,self._set_axis_maximum(maximum))
 
@@ -321,7 +328,12 @@ class Plot:
 
 
     def plot_hist(self, data):
-        _, values, minimum, maximum = self._series_to_arrays(data)
+        if type(data) == pd.core.series.Series:
+            _, values, minimum, maximum = self._series_to_arrays(data)
+        else:
+            print("wolfplot does currently not support the provided type " + type(data).__name__ + " for histograms. Please use the pandas-type Series")
+        #if self.y_lim == None:
+
         self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
         ax = self._create_histogram(ax,values)
         self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
