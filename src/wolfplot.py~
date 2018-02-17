@@ -104,9 +104,16 @@ class Plot:
         
         
     def _linear_regression(self,x,y):
-        
-        x = x[:, np.newaxis]
-        y = y[:, np.newaxis]
+
+        x_max = x.max()
+        x_min = x.min()
+
+        x_pred = np.arange(x_min, x_max+1, (x_max-x_min)/20)
+
+
+        x = np.array(x[:, np.newaxis], dtype='float64')
+        y = np.array(y[:, np.newaxis], dtype='float64')
+        x_pred = np.array(x_pred[:,np.newaxis], dtype='float64')
         
         # Create linear regression object
         regr = linear_model.LinearRegression()
@@ -115,9 +122,9 @@ class Plot:
         regr.fit(x, y)
         
         # Make predictions using the full set
-        y_pred = regr.predict(x)
+        y_pred = regr.predict(x_pred)
         
-        return x,y_pred
+        return x_pred,y_pred
         
 
 
@@ -393,15 +400,25 @@ class Plot:
         self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
 
 
-    def plot_scatter(self, x, y, data_label = None, fig_kind = "single", regression = False):
-        if type(x) == pd.core.series.Series and type(y) == pd.core.series.Series:
-            _, x_values, x_minimum, x_maximum = self._series_to_arrays(x)
-            _, y_values, y_minimum, y_maximum = self._series_to_arrays(y)
+    def plot_scatter(self, data, x_column_names, y_column_names, data_label = None, fig_kind = "single", regression = False):
+        """
+            Input parameters:
+            data (type: pd.core.frame.DataFrame): DataFrame from which x and y columns are extracted
+            x_column_names (type: str or tuple): tuple of column names which should be extracted for x-values
+            y_column_names (type: str or tuple): tuple of column names which should be extracted for y-values
+            data_label(type: tuple): only required if there are multiple x and y columns to label each "layer" of the histogram in the legend or for the titles if small multiples are applied
+            fig_kind (type: string): Describes whether data should be plotted on one or on multiple graphs
+            regression (type: bool): Describes whether a regression line should be plotted in the graph (default: False)
 
-        if type(x) == pd.core.frame.DataFrame:
-            column_titles, data = self._dataframe_to_arrays(x)
-            print(column_titles)
-            return
+            Return parameters:
+        """
+        
+        x_values, x_column_names = self._get_columns_from_data(data, column_names=x_column_names)
+        y_values, y_column_names = self._get_columns_from_data(data, column_names=y_column_names)
+
+        print(x_values.shape)
+        print(x_column_names)
+        print(y_column_names)
         
 
         # Create graph
@@ -416,7 +433,7 @@ class Plot:
             self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
             title = False
             n_plots = 1
-            ax = self._create_scatter(ax ,x = x_values,y = y_values, regression = regression)
+            ax = self._create_scatter(ax ,x = x_values[0],y = y_values[0], regression = regression)
             
         # Fit plot into figure
         if fig_kind == "multiple":
