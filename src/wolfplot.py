@@ -316,7 +316,6 @@ class Plot:
 
         if type(column_names) == str:
             data_array = np.expand_dims(data[column_names].values, axis = 0)
-            print("Case1")
         elif type(data) == pd.core.series.Series:
             data_array = np.expand_dims(data.values, axis = 0)
             column_names = data.name
@@ -334,9 +333,6 @@ class Plot:
                     else:
                         data_array = np.append(data_array, np.expand_dims(data[name].values, axis=0), axis=0)
 
-
-        print(data_array)
-        print(column_names)
         return data_array, column_names
     
 
@@ -388,14 +384,9 @@ class Plot:
 
 
 
-    def plot_hist(self, data):
-        #if type(data) == pd.core.series.Series:
-        #    _, values, minimum, maximum = self._series_to_arrays(data)
-        #else:
-            #print("wolfplot does currently not support the provided type " + type(data).__name__ + " for histograms. Please use the pandas-type Series")
-        #if self.y_lim == None:
-        print(type(data))
-        values,_ = self._get_columns_from_data(data)
+    def plot_hist(self, data, column_names = None):
+
+        values,_ = self._get_columns_from_data(data, column_names)
 
         self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
         ax = self._create_histogram(ax,values[0])
