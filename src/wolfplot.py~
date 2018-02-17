@@ -125,6 +125,34 @@ class Plot:
         y_pred = regr.predict(x_pred)
         
         return x_pred,y_pred
+
+
+
+    def _create_figure_and_axes(self, fig_kind = "single", n_data = 1, axes_per_row=4):
+        """
+            Input parameters:
+            fig_kind (type: string): Describes whether data should be plotted on one or on multiple graphs
+            number_of_axes (int): Only relevant for multiple figure, describes number of axes
+            axes_per_row (int): Describes number of axes per graph row
+        """
+        if fig_kind=="single":
+            self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
+            n_plots = 1
+
+        if fig_kind == "multiple":            
+            self.fig, ax = plt.subplots(int(n_data/n_per_row)+1,n_per_row, figsize=(self.width,self.height))
+            n_plots = (int(n_data/n_per_row)+1) * n_per_row         
+
+
+            # Set subplot axis without content to invisible
+            gap = n_plots - n_data
+            if gap:
+                for i in range(gap):
+                    ax[int(n_data/n_per_row)][n_per_row-i-1].axis('off')
+
+        return ax
+            
+
         
 
 
@@ -408,9 +436,8 @@ class Plot:
         y_values, y_column_names = self._get_columns_from_data(data, column_names=y_column_names)
         
 
-        if fig_kind=="single":
-            self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
-            title = False
+        ax = self._create_figure_and_axes(fig_kind = fig_kind, n_data = x_values.shape[0], axes_per_row = 4)
+        
 
         for i,x_val in enumerate(x_values):
             if fig_kind == "single":
@@ -420,12 +447,25 @@ class Plot:
                 else:
                     tmp = data_label[i]
                 ax = self._create_scatter(ax ,x = x_values[i],y = y_values[i], data_label = tmp, regression = regression)
-                
-            # Fit plot into figure
+
             if fig_kind == "multiple":
-                self.fig.tight_layout()
-            else:
-                self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
+                y_axis_plot = True
+                if int(i%4)!=0:
+                    y_axis_plot = False
+                
+                ax[int(i/4)][int(i%4)] = self._create_scatter(ax[int(i/4)][int(i%4)] ,x = x_values[i],y = y_values[i] , data_label = data_label[i], title = True , y_axis_plot = y_axis_plot, regression = regression)
+
+                
+        # Fit plot into figure
+        if fig_kind == "multiple":
+            self.fig.tight_layout()
+        elif fig_kind == "single":
+            try:
+                ax.legend()
+            except:
+                pass
+            self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
+
 
 
 
