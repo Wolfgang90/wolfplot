@@ -320,12 +320,12 @@ class Plot:
             column_names = data.name
             
         # If multiple columns from a dataframe are required
-        elif type(data_in) == pd.core.frame.DataFrame:
+        elif type(data) == pd.core.frame.DataFrame:
             if type(column_names) != tuple:
                 print("For a dataframe from which more than one column should be selected a tuple with the columns to be selected needs to be provided and is not available")
             else:
                 # Go through all column names and get the columns
-                for i, name in column_names:
+                for i, name in enumerate(column_names):
                     if i == 0:
                         data_array = np.expand_dims(data[name].values, axis = 0)
                     else:
@@ -406,18 +406,26 @@ class Plot:
         
         x_values, x_column_names = self._get_columns_from_data(data, column_names=x_column_names)
         y_values, y_column_names = self._get_columns_from_data(data, column_names=y_column_names)
+        
 
         if fig_kind=="single":
             self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
             title = False
-            n_plots = 1
-            ax = self._create_scatter(ax ,x = x_values[0],y = y_values[0], regression = regression)
-            
-        # Fit plot into figure
-        if fig_kind == "multiple":
-            self.fig.tight_layout()
-        else:
-            self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
+
+        for i,x_val in enumerate(x_values):
+            if fig_kind == "single":
+                n_plots = 1
+                if data_label == None:
+                    tmp = None
+                else:
+                    tmp = data_label[i]
+                ax = self._create_scatter(ax ,x = x_values[i],y = y_values[i], data_label = tmp, regression = regression)
+                
+            # Fit plot into figure
+            if fig_kind == "multiple":
+                self.fig.tight_layout()
+            else:
+                self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
 
 
 
