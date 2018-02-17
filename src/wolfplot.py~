@@ -264,12 +264,12 @@ class Plot:
         ax.grid(axis=self.grid_direction,which=self.grid_ticktype)        
         
         # Create graph
-        print(x.size)
-        print(type(x))
-        print(x)
-        print(y.size)
-        print(type(y))
-        print(y)
+        #print(x.size)
+        #print(type(x))
+        #print(x)
+        #print(y.size)
+        #print(type(y))
+        #print(y)
 
         ax.scatter(x ,y, label=data_label, s = 3, linewidth = 0.0)
         
@@ -291,9 +291,24 @@ class Plot:
         maximum = pd_series.max()
         return keys, values, minimum, maximum
 
+
+
+    def _dataframe_to_arrays(self, pd_data_frame):
+        column_titles = pd_data_frame.columns.values
+        for i, title in enumerate(column_titles):
+            if i == 0:
+                data = np.expand_dims(pd_data_frame[title].values, axis = 0)
+            else:
+                data = np.append(data, np.expand_dims(pd_data_frame[title].values, axis=0), axis=0)
+
+        return column_titles, data
+    
+
+
     def _set_axis_maximum(self,maximum):
         maximum_axis = (math.ceil(maximum/(10**(len(str(int(maximum)))-1)))) * (10**(len(str(int(maximum)))-1))
         return maximum_axis
+
 
 
     def plot_bar(self, data):
