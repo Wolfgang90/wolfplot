@@ -254,16 +254,23 @@ class Plot:
             
         
        
-        ax = self._set_axis(ax)
+        ax = self._set_axis(ax, axis = "x")
         
         
-        ax = self._set_axis(ax, axis_plot = y_axis_plot)
+        ax = self._set_axis(ax, axis_plot = y_axis_plot, axis="y")
         
         
         # Set grid lines
         ax.grid(axis=self.grid_direction,which=self.grid_ticktype)        
         
         # Create graph
+        #print(x.size)
+        #print(type(x))
+        #print(x)
+        #print(y.size)
+        #print(type(y))
+        #print(y)
+
         ax.scatter(x ,y, label=data_label, s = 3, linewidth = 0.0)
         
         if regression:
@@ -273,8 +280,11 @@ class Plot:
         
         return ax
 
-    def _series_to_arrays(self, pd_series, ascending = False):
-        pd_series = pd_series.value_counts(ascending=ascending)
+    def _series_to_arrays(self, pd_series, value_counts = False, ascending = False):
+
+        # Value counts only to be set for bar charts and hbarcharts
+        if value_counts:
+            pd_series = pd_series.value_counts(ascending=ascending)
         keys = pd_series.keys().values
         values = pd_series.values
         minimum = pd_series.min()
@@ -292,7 +302,7 @@ class Plot:
             data (type: pandas.core.series.Series): Keys as labels and values as bars
         """
         if type(data) == pd.core.series.Series:
-            keys, values, minimum, maximum = self._series_to_arrays(data)
+            keys, values, minimum, maximum = self._series_to_arrays(data, value_counts = True)
         else:
             print("wolfplot does currently not support the provided type " + type(data).__name__ + " for barplots. Please use the pandas-type Series")
         if self.y_lim == None:
@@ -311,7 +321,7 @@ class Plot:
             grid_direction(type:string): x, y, or xy
         """
         if type(data) == pd.core.series.Series:
-            keys, values, minimum, maximum = self._series_to_arrays(data, ascending = True)
+            keys, values, minimum, maximum = self._series_to_arrays(data, value_counts = True, ascending = True)
         else:
             print("wolfplot does currently not support the provided type " + type(data).__name__ + " for hbarplots. Please use the pandas-type Series")
         if self.y_lim == None:
@@ -337,6 +347,34 @@ class Plot:
         self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
         ax = self._create_histogram(ax,values)
         self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
+
+
+    def plot_scatter(self, x, y, data_label = None, fig_kind = "single", regression = False):
+        if type(x) == pd.core.series.Series and type(y) == pd.core.series.Series:
+            _, x_values, x_minimum, x_maximum = self._series_to_arrays(x)
+            _, y_values, y_minimum, y_maximum = self._series_to_arrays(y)
+        
+
+        # Create graph
+        #print(x_values.size)
+        #print(type(x_values))
+        #print(x_values)
+        #print(y_values.size)
+        #print(type(y_values))
+        #print(y)
+
+        if fig_kind=="single":
+            self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
+            title = False
+            n_plots = 1
+            ax = self._create_scatter(ax ,x = x_values,y = y_values, regression = regression)
+            
+        # Fit plot into figure
+        if fig_kind == "multiple":
+            self.fig.tight_layout()
+        else:
+            self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
+
 
 
     
@@ -378,11 +416,6 @@ class Plot:
             #ax = self.fig.add_subplot(int(x.shape[0]/4)+1,int(x.shape[0]%4)+1)
             n_plots = (int(x.shape[0]/4)+1) * 4         
          
-        
-        
-        if fig_type == "hist":
-
-            ax = self._create_histogram(ax,x)
         
         
         """
