@@ -302,6 +302,42 @@ class Plot:
                 data = np.append(data, np.expand_dims(pd_data_frame[title].values, axis=0), axis=0)
 
         return column_titles, data
+
+    def _get_columns_from_data(self, data, column_names=None):
+        """
+            Input parameters:
+            data (type: pandas.core.frame.DataFrame or pandas.core.series.Series): DataFrame from which columns should be extracted
+            column_names (type: str or tuple): tuple of column names which should be extracted
+
+            Return parameters:
+            data_array(type: ndarry): data from the columns in the format [[column 1][column 2][column 3]...]
+        """
+        # If just one column from a dataframe or the values from a series are required
+
+        if type(column_names) == str:
+            data_array = np.expand_dims(data[column_names].values, axis = 0)
+            print("Case1")
+        elif type(data) == pd.core.series.Series:
+            data_array = np.expand_dims(data.values, axis = 0)
+            column_names = data.name
+            
+        # If multiple columns from a dataframe are required
+        elif type(data_in) == pd.core.frame.DataFrame:
+            if type(column_names) != tuple:
+                print("For a dataframe from which more than one column should be selected a tuple with the columns to be selected needs to be provided and is not available")
+            else:
+                print("Case2")
+                # Go through all column names and get the columns
+                for i, name in column_names:
+                    if i == 0:
+                        data_array = np.expand_dims(data[name].values, axis = 0)
+                    else:
+                        data_array = np.append(data_array, np.expand_dims(data[name].values, axis=0), axis=0)
+
+
+        print(data_array)
+        print(column_names)
+        return data_array, column_names
     
 
 
@@ -353,14 +389,16 @@ class Plot:
 
 
     def plot_hist(self, data):
-        if type(data) == pd.core.series.Series:
-            _, values, minimum, maximum = self._series_to_arrays(data)
-        else:
-            print("wolfplot does currently not support the provided type " + type(data).__name__ + " for histograms. Please use the pandas-type Series")
+        #if type(data) == pd.core.series.Series:
+        #    _, values, minimum, maximum = self._series_to_arrays(data)
+        #else:
+            #print("wolfplot does currently not support the provided type " + type(data).__name__ + " for histograms. Please use the pandas-type Series")
         #if self.y_lim == None:
+        print(type(data))
+        values,_ = self._get_columns_from_data(data)
 
         self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
-        ax = self._create_histogram(ax,values)
+        ax = self._create_histogram(ax,values[0])
         self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
 
 
@@ -368,6 +406,11 @@ class Plot:
         if type(x) == pd.core.series.Series and type(y) == pd.core.series.Series:
             _, x_values, x_minimum, x_maximum = self._series_to_arrays(x)
             _, y_values, y_minimum, y_maximum = self._series_to_arrays(y)
+
+        if type(x) == pd.core.frame.DataFrame:
+            column_titles, data = self._dataframe_to_arrays(x)
+            print(column_titles)
+            return
         
 
         # Create graph
