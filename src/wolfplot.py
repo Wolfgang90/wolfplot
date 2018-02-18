@@ -176,12 +176,6 @@ class Plot:
             if eval("self." + axis + "_number_format"):
 
                 exec("ax." + axis + "axis.set_major_formatter(self._format_ticker(format_type = '" + format_type + "', axis = '" + axis + "'))")
-                #if axis == "x":
-                    #ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda x, loc: self.x_number_format.format(int(x)).replace(",","x").replace(".",",").replace("x",".")))
-                    #ax.xaxis.set_major_formatter(self._format_ticker(format_type="number_de", axis = "x"))
-                #if axis == "y":
-                    #ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, loc: self.y_number_format.format(int(x)).replace(",","x").replace(".",",").replace("x",".")))
-                    #ax.yaxis.set_major_formatter(self._format_ticker(format_type="number_de", axis = "y"))
 
             # Set orientation and alignment of axis tick labels
             exec("plt.setp(ax.get_" + axis + "ticklabels(), rotation=self." + axis + "_rotation, horizontalalignment=self." + axis + "_horizontal_alignment)")
@@ -214,6 +208,8 @@ class Plot:
 
         return ax
 
+
+
     def _format_ticker(self, format_type, axis):
         """
             Number formatting function to be handed over to FuncFormatter
@@ -223,10 +219,11 @@ class Plot:
         """
 
         if format_type == "number_de":
+            major_formatter = ticker.FuncFormatter(lambda x, loc: "{:,}".format(int(x)).replace(",","x").replace(".",",").replace("x","."))
+
+        if format_type == "timedelta":
             if axis == 'x':
-                major_formatter = ticker.FuncFormatter(lambda x, loc: self.x_number_format.format(int(x)).replace(",","x").replace(".",",").replace("x","."))
-            elif axis == 'y':
-                major_formatter = ticker.FuncFormatter(lambda x, loc: self.y_number_format.format(int(x)).replace(",","x").replace(".",",").replace("x","."))
+                major_formatter = ticker.FuncFormatter(lambda x, loc: str(datetime.timedelta(seconds=x)))
 
         return major_formatter
     
