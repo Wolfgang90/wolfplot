@@ -286,14 +286,10 @@ class Plot:
         
         if title:
             ax = self._set_title(ax, data_label)
-            
-        
        
         ax = self._set_axis(ax, axis = "x")
         
-        
         ax = self._set_axis(ax, axis_plot = y_axis_plot, axis="y")
-        
         
         # Set grid lines
         ax.grid(axis=self.grid_direction,which=self.grid_ticktype)        
@@ -303,9 +299,33 @@ class Plot:
         if regression:
             x_reg, y_reg = self._linear_regression(x,y)
             ax.plot(x_reg,y_reg)
-            
         
         return ax
+
+
+    def _create_boxplot(self, ax, x_data, data_label):
+
+         # Set x-number format to None as there are no numbers on the axis
+        self.x_number_format = None
+
+        # Determine number of y-values and create vector representing y-Axis
+        x_pos = np.arange(len(data_label)).tolist()
+
+        # Set x and y axis
+        ax = self._set_axis(ax,axis_pos=x_pos, axis_ticklabels = data_label, axis = "x")
+        ax = self._set_axis(ax, axis = "y")
+
+        # Set grid lines
+        ax.grid(axis=self.grid_direction,which=self.grid_ticktype)
+           
+        # set lengths of y-tick parameters to 0
+        ax.tick_params(axis='x', length=0)
+
+        ax.boxplot(x_data)
+
+
+        return ax
+
 
     def _series_to_arrays(self, pd_series, value_counts = False, ascending = False):
 
@@ -467,91 +487,14 @@ class Plot:
             self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
 
 
+    def plot_boxplot(self, data, column_names = None): 
 
+        values, column_names = self._get_columns_from_data(data, column_names)
+        
+        self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
+        ax = self._create_boxplot(ax, values, data_label=column_names)
+        self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
 
-    
-    def plot_data(self,x = np.empty([1]),y = None, data_label = None, fig_type = None,fig_kind="single", 
-                  regression = False):
-        """
-            Input parameters:
-            width (type: float): width of overall figure (default: 6)
-            x (type: numpy-array): x-values
-            y (type: numpy-array): y-values
-            data_label (type: numpy-arra): contains the labels for the data in plots with multiple data which will either be 
-                                           displayed in the legend(fig_kind="single") or the title (fig_kind="multiple")
-            fig_type (type: string): Describes the figure to be plotted (possible: 'hist', 'scatter')
-            fig_kind (type: string): Describes whether data should be plotted on one or on multiple graphs
-                                     (possible: 'single', 'multiple'; default: 'single')
-            regression (type: bool): Describes whether a regression line should be plotted in the graph (default: False)
-            
-            Return variable:
-            fig (type: matplotlib figure): The figure containing the plot
-        """
-        
-        
-        
-        try:
-            if not x.shape[1]:
-                pass
-        except:
-            x = np.expand_dims(x, axis=0)            
-            
-        if fig_kind=="single":
-            self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
-            title = False
-            n_plots = 1
-            
-        if fig_kind == "multiple":            
-            #ax = self.fig.add_subplot(int(i/4)+1,int(i%4)+1,i+1)
-            self.fig, ax = plt.subplots(int(x.shape[0]/4)+1,4, figsize=(self.width,self.height))
-            title = True
-            #ax = self.fig.add_subplot(int(x.shape[0]/4)+1,int(x.shape[0]%4)+1)
-            n_plots = (int(x.shape[0]/4)+1) * 4         
-         
-        
-        
-        """
-            Start: Implementation Scatter Plot
-        """
-        
-        for i in range(x.shape[0]):
-            
-            y_axis = True
-            if int(i%4)!=0:
-                y_axis = False
-
-
-            if fig_type == "scatter":
-                if fig_kind == "multiple":
-                    ax[int(i/4)][int(i%4)] = self._create_scatter(ax[int(i/4)][int(i%4)] ,x = x[i],y = y[i] ,
-                                                                  data_label = data_label[i], title = title ,
-                                                                  y_axis = y_axis, regression = regression)
-                if fig_kind == "single":
-                    ax = self._create_scatter(ax ,x = x[i],y = y[i], data_label = data_label[i],title = title ,
-                                              y_axis = y_axis, regression = regression)
-
-         
-        # Set subplot axis without content to invisible
-        gap = n_plots - x.shape[0]
-        if gap:
-            for i in range(gap):
-                ax[int(x.shape[0]/4)][4-i-1].axis('off')
-                
-        try:        
-            if data_label[0] and fig_kind == "single":    
-                ax.legend(fontsize="xx-small")
-        except:
-            pass
-        
-
-        
-		
-		
-        # Fit plot into figure
-        if fig_kind == "multiple":
-            self.fig.tight_layout()
-        else:
-            self.fig.subplots_adjust(bottom=0.2, left=0.35, top=0.95, right=0.95)
 
 
     def save_figure(self, path):
