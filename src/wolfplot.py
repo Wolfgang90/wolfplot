@@ -24,10 +24,10 @@ class Plot:
 
                  
                  
-                 x_number_format = "{:,}",
+                 x_format_type = None,
                  x_rotation=45, 
                  x_horizontal_alignment="right", 
-                 y_number_format = "{:,}",
+                 y_format_type = None,
                  y_rotation=0, 
                  y_horizontal_alignment="right",
                  
@@ -51,11 +51,11 @@ class Plot:
             y_minor_tick_width (type: float): width of the minor y-tick labels, which should be a possible divider 
                                               of the major tick width (default: None)
         
-            x_number_format (type: format): format for the x-axis tick labels (default: {:,})
+            x_format_type (type: string): format for the x-axis tick labels (possible values: 'number_de')
             x_rotation (type: int): rotation for the x-axis tick labels (default: 45)
             xhorizontalalignement(type: string): alignement of the x-axis tick labels 
                                                  (possible: 'right', 'center', 'left'; default: right)
-            y_number_format (type: format): format for the y-axis tick labels (default: {:,})
+            y_format_type (type: string): format for the y-axis tick labels (possible values: 'number_de')
             y_rotation (type: int): rotation for the y-axis tick labels (default: 45)
             yhorizontalalignement(type: string): alignement of the y-axis tick labels 
                                                  (possible: 'right', 'center', 'left'; default: right)
@@ -73,14 +73,14 @@ class Plot:
         self.width = width
         self.height = height
         self.x_label = x_label
-        self.x_number_format = x_number_format
+        self.x_format_type = x_format_type
         self.x_lim = x_lim
         self.x_tick_width = x_tick_width
         self.x_minor_tick_width = x_minor_tick_width
         self.x_rotation = x_rotation
         self.x_horizontal_alignment = x_horizontal_alignment
         self.y_label = y_label
-        self.y_number_format = y_number_format
+        self.y_format_type = y_format_type
         self.y_lim = y_lim
         self.y_tick_width = y_tick_width
         self.y_minor_tick_width =y_minor_tick_width
@@ -173,7 +173,7 @@ class Plot:
             if axis_ticklabels:
                 exec("ax.set_" + axis + "ticklabels(axis_ticklabels)")
             # Set 1000-seperator
-            if eval("self." + axis + "_number_format"):
+            if eval("self." + axis + "_format_type"):
 
                 exec("ax." + axis + "axis.set_major_formatter(self._format_ticker(format_type = '" + format_type + "', axis = '" + axis + "'))")
 
@@ -231,9 +231,6 @@ class Plot:
 
     def _create_bar(self, ax, keys, values):
 
-         # Set x-number format to None as there are no numbers on the axis
-        self.x_number_format = None
-        
         # Determine number of y-values and create vector representing y-Axis
         x_pos = np.arange(len(keys)).tolist()
 
@@ -256,10 +253,6 @@ class Plot:
 
 
     def _create_hbar(self, ax, keys, values):
-
-        # Set y-number format to None as there are no numbers on the axis
-        self.y_number_format = None
-
 
         # Determine number of y-values and create vector representing y-Axis
         y_pos = np.arange(len(keys)).tolist()
@@ -317,9 +310,6 @@ class Plot:
 
 
     def _create_boxplot(self, ax, x_data, data_label, display_info=True):
-
-         # Set x-number format to None as there are no numbers on the axis
-        self.x_number_format = None
 
         # Determine number of y-values and create vector representing y-Axis
         x_pos = np.arange(len(data_label)).tolist()
