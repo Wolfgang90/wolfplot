@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 
 import math
+import datetime
 
 
 
@@ -221,14 +222,13 @@ class Plot:
             major_formatter = ticker.FuncFormatter(lambda x, loc: "{:,}".format(int(x)).replace(",","x").replace(".",",").replace("x","."))
 
         if eval("self." + axis + "_format_type == 'timedelta'"):
-            if axis == 'x':
-                major_formatter = ticker.FuncFormatter(lambda x, loc: str(datetime.timedelta(seconds=x)))
+            major_formatter = ticker.FuncFormatter(lambda x, loc: str(datetime.timedelta(seconds=x)))
 
         return major_formatter
     
 
 
-    def _create_bar(self, ax, keys, values):
+    def _create_bar(self, ax, keys, values, data_label = None):
 
         # Determine number of y-values and create vector representing y-Axis
         x_pos = np.arange(len(keys)).tolist()
@@ -244,14 +244,14 @@ class Plot:
         ax.tick_params(axis='x', length=0)
 
         # Create data part of the chart
-        ax.bar(x_pos, values,1)
+        ax.bar(x_pos, values,1, label = data_label)
         
         return ax
 
 
 
 
-    def _create_hbar(self, ax, keys, values):
+    def _create_hbar(self, ax, keys, values, data_label = None):
 
         # Determine number of y-values and create vector representing y-Axis
         y_pos = np.arange(len(keys)).tolist()
@@ -268,7 +268,7 @@ class Plot:
         ax.tick_params(axis='y', length=0)
 
         # Create data part of the chart
-        ax.barh(y_pos, values,1)
+        ax.barh(y_pos, values,1, label = data_label)
 
         return ax
 
@@ -346,8 +346,9 @@ class Plot:
         # Value counts only to be set for bar charts and hbarcharts
         if value_counts:
             pd_series = pd_series.value_counts(ascending=ascending)
-        keys = pd_series.keys().values
-        values = pd_series.values
+
+        keys = np.expand_dims(pd_series.keys().values, axis = 0)
+        values = np.expand_dims(pd_series.values, axis = 0)
         minimum = pd_series.min()
         maximum = pd_series.max()
         return keys, values, minimum, maximum
@@ -403,43 +404,81 @@ class Plot:
 
 
 
-    def plot_bar(self, data):
+    def plot_bar(self, data, key_column_names = None, values_column_names= None, data_label = None, fig_kind = "single"):
         """
             Input parameters:
             data (type: pandas.core.series.Series): Keys as labels and values as bars
         """
+
         if type(data) == pd.core.series.Series:
-            keys, values, minimum, maximum = self._series_to_arrays(data, value_counts = True)
+            key, values, minimum, maximum = self._series_to_arrays(data, value_counts = True)
         else:
-            print("wolfplot does currently not support the provided type " + type(data).__name__ + " for barplots. Please use the pandas-type Series")
+            # Get key
+            key, key_column_names = self._get_columns_from_data(data, column_names=key_column_names)
+            # Get values
+            values, values_column_names = self._get_columns_from_data(data, column_names=values_column_names)
+
+
+        ax = self._create_figure_and_axes(fig_kind = fig_kind, n_data = values.shape[0], axes_per_row = 4)
+            
+
+        # method for setting better axis limits could be transfered into axis
+        """
         if self.y_lim == None:
             self.y_lim = (0,self._set_axis_maximum(maximum))
 
         if self.y_tick_width == None:
             self.y_tick_width = self.y_lim[1]/10
-        self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
-        ax = self._create_bar(ax, keys, values)    
+        """
+
+        for i,val in enumerate(values):
+            if fig_kind == "single":
+                n_plots = 1
+                if data_label == None:
+                    tmp = None
+                else:
+                    tmp = data_label[i]
+                print(values[i])
+                ax = self._create_bar(ax, key[0], values[i], data_label)    
+
         self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
 
-    def plot_hbar(self, data):
+    def plot_hbar(self, data, key_column_names = None, values_column_names = None, data_label = None, fig_kind = "single"):
         """
             Input parameters:
             data (type: pandas.core.series.Series): Keys as labels and values as bars
             grid_direction(type:string): x, y, or xy
         """
         if type(data) == pd.core.series.Series:
-            keys, values, minimum, maximum = self._series_to_arrays(data, value_counts = True, ascending = True)
+            key, values, minimum, maximum = self._series_to_arrays(data, value_counts = True, ascending = True)
         else:
-            print("wolfplot does currently not support the provided type " + type(data).__name__ + " for hbarplots. Please use the pandas-type Series")
+            # Get key
+            key, key_column_names = self._get_columns_from_data(data, column_names=key_column_names)
+            # Get values
+            values, values_column_names = self._get_columns_from_data(data, column_names=values_column_names)
+
+        ax = self._create_figure_and_axes(fig_kind = fig_kind, n_data = values.shape[0], axes_per_row = 4)
+
+        """
         if self.y_lim == None:
             self.grid_direction = self.grid_direction
         if self.x_lim == None:
             self.x_lim = (0,self._set_axis_maximum(maximum))
 
+
         if self.x_tick_width == None:
             self.x_tick_width = self.x_lim[1]/10
-        self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
-        ax = self._create_hbar(ax, keys, values)    
+        """
+        for i,val in enumerate(values):
+            if fig_kind == "single":
+                n_plots = 1
+                if data_label == None:
+                    tmp = None
+                else:
+                    tmp = data_label[i]
+                ax = self._create_hbar(ax, key[0], values[i], data_label)    
+
+        
         self.fig.subplots_adjust(bottom=0.2, left=0.35, top=0.95, right=0.95)
 
 
@@ -453,7 +492,7 @@ class Plot:
         self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
 
 
-    def plot_scatter(self, data, x_column_names, y_column_names, data_label = None, fig_kind = "single", regression = False):
+    def plot_scatter(self, data, x_column_names, y_column_names, data_label = None, fig_kind = "single", regression = False, axes_per_row = 4):
         """
             Input parameters:
             data (type: pd.core.frame.DataFrame): DataFrame from which x and y columns are extracted
@@ -470,7 +509,7 @@ class Plot:
         y_values, y_column_names = self._get_columns_from_data(data, column_names=y_column_names)
         
 
-        ax = self._create_figure_and_axes(fig_kind = fig_kind, n_data = x_values.shape[0], axes_per_row = 4)
+        ax = self._create_figure_and_axes(fig_kind = fig_kind, n_data = x_values.shape[0], axes_per_row = axes_per_row)
         
 
         for i,x_val in enumerate(x_values):
@@ -484,10 +523,10 @@ class Plot:
 
             if fig_kind == "multiple":
                 y_axis_plot = True
-                if int(i%4)!=0:
+                if int(i%axes_per_row)!=0:
                     y_axis_plot = False
                 
-                ax[int(i/4)][int(i%4)] = self._create_scatter(ax[int(i/4)][int(i%4)] ,x = x_values[i],y = y_values[i] , data_label = data_label[i], title = True , y_axis_plot = y_axis_plot, regression = regression)
+                ax[int(i/axes_per_row)][int(i%axes_per_row)] = self._create_scatter(ax[int(i/axes_per_row)][int(i%axes_per_row)] ,x = x_values[i],y = y_values[i] , data_label = data_label[i], title = True , y_axis_plot = y_axis_plot, regression = regression)
 
                 
         # Fit plot into figure
