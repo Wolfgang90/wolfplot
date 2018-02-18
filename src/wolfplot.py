@@ -301,7 +301,7 @@ class Plot:
         return ax
 
 
-    def _create_boxplot(self, ax, x_data, data_label):
+    def _create_boxplot(self, ax, x_data, data_label, display_info=True):
 
          # Set x-number format to None as there are no numbers on the axis
         self.x_number_format = None
@@ -320,9 +320,17 @@ class Plot:
         ax.tick_params(axis='x', length=0)
 
         ax.boxplot(x_data)
+        x_data = np.swapaxes(x_data,0,1)
+
+
+        if display_info:
+            for i,_ in enumerate(data_label):
+                median = float(np.median(x_data[i]))
+                mean = float(np.mean(x_data[i]))
+                ax.text(i+1, ((ax.get_ylim())[1])*1.01, "Mean:\n" + str(round(mean,1)) +  "\nMedian:\n" + str(round(median,1)), horizontalalignment = 'center',fontsize="xx-small", weight = 'semibold')
+                
 
         ax.set_xticklabels(data_label)
-
 
         return ax
 
@@ -487,7 +495,7 @@ class Plot:
             self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
 
 
-    def plot_boxplot(self, data, column_names = None): 
+    def plot_boxplot(self, data, column_names = None, display_info=True): 
 
         values, column_names = self._get_columns_from_data(data, column_names)
 
@@ -497,8 +505,11 @@ class Plot:
 
 
         self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
-        ax = self._create_boxplot(ax, values, data_label=column_names)
-        self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
+        ax = self._create_boxplot(ax, values, data_label=column_names,display_info=display_info)
+        if display_info:
+            self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.9, right=0.95)
+        else:
+            self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
 
 
 
