@@ -323,8 +323,6 @@ class Plot:
         # set lengths of y-tick parameters to 0
         ax.tick_params(axis='x', length=0)
 
-        print(type(x_data[0][0]))
-
         ax.boxplot(x_data)
         x_data = np.swapaxes(x_data,0,1)
 
@@ -407,7 +405,15 @@ class Plot:
     def plot_bar(self, data, key_column_names = None, values_column_names= None, data_label = None, fig_kind = "single"):
         """
             Input parameters:
-            data (type: pandas.core.series.Series): Keys as labels and values as bars
+            data (type: pd.core.series.Series (keys as labels and values as bars), pd.core.fram.DataFrame): Data structure containing one columns with the keys and one or more columns with values
+            key_column_names (type: str or tuple): column names which should be extracted as key
+            values_column_names (type: str or tuple): column names which should be extracted as values
+            data_label(type: tuple): only required if there are multiple value columns to label each "layer" of the barplot in the legend or for the titles if small multiples are applied
+            fig_kind (type: string): Describes whether data should be plotted on one or on multiple graphs
+
+            Return parameters: None
+
+            Comment: multiple value columns are not yet implemented
         """
 
         if type(data) == pd.core.series.Series:
@@ -438,19 +444,30 @@ class Plot:
                     tmp = None
                 else:
                     tmp = data_label[i]
-                print(values[i])
                 ax = self._create_bar(ax, key[0], values[i], data_label)    
 
         self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
 
+
+
+
     def plot_hbar(self, data, key_column_names = None, values_column_names = None, data_label = None, fig_kind = "single"):
-        """
+         """
             Input parameters:
-            data (type: pandas.core.series.Series): Keys as labels and values as bars
-            grid_direction(type:string): x, y, or xy
+            data (type: pd.core.series.Series (keys as labels and values as bars), pd.core.fram.DataFrame): Data structure containing one columns with the keys and one or more columns with values
+            key_column_names (type: str or tuple): column names which should be extracted as key
+            values_column_names (type: str or tuple): column names which should be extracted as values
+            data_label(type: tuple): only required if there are multiple value columns to label each "layer" of the barplot in the legend or for the titles if small multiples are applied
+            fig_kind (type: string): Describes whether data should be plotted on one or on multiple graphs
+
+            Return parameters: None
+
+            Comment: multiple value columns are not yet implemented
         """
+
+
         if type(data) == pd.core.series.Series:
-            keys, values, minimum, maximum = self._series_to_arrays(data, value_counts = True, ascending = True)
+            key, values, minimum, maximum = self._series_to_arrays(data, value_counts = True, ascending = True)
         else:
             # Get key
             key, key_column_names = self._get_columns_from_data(data, column_names=key_column_names)
@@ -484,6 +501,13 @@ class Plot:
 
 
     def plot_hist(self, data, column_names = None):
+        """
+            Input parameters:
+            data (type: pd.core.frame.DataFrame): DataFrame from which value columns are extracted
+            x_column_names (type: str or tuple): column names which should be extracted for x-values
+
+            Return parameters: None
+        """
 
         values,_ = self._get_columns_from_data(data, column_names)
 
@@ -496,13 +520,14 @@ class Plot:
         """
             Input parameters:
             data (type: pd.core.frame.DataFrame): DataFrame from which x and y columns are extracted
-            x_column_names (type: str or tuple): tuple of column names which should be extracted for x-values
-            y_column_names (type: str or tuple): tuple of column names which should be extracted for y-values
-            data_label(type: tuple): only required if there are multiple x and y columns to label each "layer" of the histogram in the legend or for the titles if small multiples are applied
+            x_column_names (type: str or tuple): column names which should be extracted for x-values
+            y_column_names (type: str or tuple): column names which should be extracted for y-values
+            data_label(type: tuple): only required if there are multiple x and y columns to label each "layer" of the scatter in the legend or for the titles if small multiples are applied
             fig_kind (type: string): Describes whether data should be plotted on one or on multiple graphs
             regression (type: bool): Describes whether a regression line should be plotted in the graph (default: False)
+            axes_per_row(type: int): Number of axes in one row (only applies if fig_kind = 'multiple'
 
-            Return parameters:
+            Return parameters: None
         """
         
         x_values, x_column_names = self._get_columns_from_data(data, column_names=x_column_names)
@@ -540,7 +565,13 @@ class Plot:
             self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
 
 
+
     def plot_boxplot(self, data, column_names = None, display_info=True): 
+        """
+            data (type: pd.core.frame.DataFrame): DataFrame from which values are extracted
+            column_names (type: str or tuple): column names from which values should be extracted
+            display_info (type: bool): if True, mean and median for all boxplots will be displayed above the axes
+        """
 
         values, column_names = self._get_columns_from_data(data, column_names)
 
