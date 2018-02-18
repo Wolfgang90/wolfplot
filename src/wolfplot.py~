@@ -172,6 +172,9 @@ class Plot:
         
             # Set position of tick labels
             if axis_ticklabels:
+                print("_set_axis:")
+                print(axis_ticklabels)
+
                 exec("ax.set_" + axis + "ticklabels(axis_ticklabels)")
             # Set 1000-seperator
             if eval("self." + axis + "_number_format"):
@@ -195,8 +198,6 @@ class Plot:
         # Set axis lower and upper limit
         if eval("self." + axis + "_lim"):
             exec("ax.set_" + axis + "lim(self." + axis + "_lim[0], self." + axis + "_lim[1], auto=False)")
-
-        
 
 
         # Set axis major tick width
@@ -312,6 +313,8 @@ class Plot:
         x_pos = np.arange(len(data_label)).tolist()
 
         # Set x and y axis
+        print("_create_boxplot")
+        print(data_label)
         ax = self._set_axis(ax,axis_pos=x_pos, axis_ticklabels = data_label, axis = "x")
         ax = self._set_axis(ax, axis = "y")
 
@@ -322,6 +325,8 @@ class Plot:
         ax.tick_params(axis='x', length=0)
 
         ax.boxplot(x_data)
+
+        ax.set_xticklabels(data_label)
 
 
         return ax
@@ -490,7 +495,13 @@ class Plot:
     def plot_boxplot(self, data, column_names = None): 
 
         values, column_names = self._get_columns_from_data(data, column_names)
-        
+
+        values = np.swapaxes(values,0,1)
+
+        column_names = list(column_names)
+
+        print(column_names)
+
         self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
         ax = self._create_boxplot(ax, values, data_label=column_names)
         self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)

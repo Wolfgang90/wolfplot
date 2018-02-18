@@ -196,8 +196,6 @@ class Plot:
         if eval("self." + axis + "_lim"):
             exec("ax.set_" + axis + "lim(self." + axis + "_lim[0], self." + axis + "_lim[1], auto=False)")
 
-        
-
 
         # Set axis major tick width
         if eval("self." + axis + "_tick_width"):
@@ -322,6 +320,8 @@ class Plot:
         ax.tick_params(axis='x', length=0)
 
         ax.boxplot(x_data)
+
+        ax.set_xticklabels(data_label)
 
 
         return ax
@@ -490,7 +490,12 @@ class Plot:
     def plot_boxplot(self, data, column_names = None): 
 
         values, column_names = self._get_columns_from_data(data, column_names)
-        
+
+        values = np.swapaxes(values,0,1)
+
+        column_names = list(column_names)
+
+
         self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
         ax = self._create_boxplot(ax, values, data_label=column_names)
         self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
