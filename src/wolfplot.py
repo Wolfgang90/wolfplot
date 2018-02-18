@@ -162,7 +162,7 @@ class Plot:
         return ax
 
 
-    def _set_axis(self, ax, axis_pos=None, axis_ticklabels=None, axis = None, axis_plot = True, format_type = 'number_de'):
+    def _set_axis(self, ax, axis_pos=None, axis_ticklabels=None, axis = None, axis_plot = True):
 
         if axis_plot:
 
@@ -175,7 +175,7 @@ class Plot:
             # Set 1000-seperator
             if eval("self." + axis + "_format_type"):
 
-                exec("ax." + axis + "axis.set_major_formatter(self._format_ticker(format_type = '" + format_type + "', axis = '" + axis + "'))")
+                exec("ax." + axis + "axis.set_major_formatter(self._format_ticker(axis = '" + axis + "'))")
 
             # Set orientation and alignment of axis tick labels
             exec("plt.setp(ax.get_" + axis + "ticklabels(), rotation=self." + axis + "_rotation, horizontalalignment=self." + axis + "_horizontal_alignment)")
@@ -210,18 +210,17 @@ class Plot:
 
 
 
-    def _format_ticker(self, format_type, axis):
+    def _format_ticker(self, axis):
         """
             Number formatting function to be handed over to FuncFormatter
             Input paramters:
             number(type: number-like): The number to be formatted            
-            format_type(type: string): The format to be applied (possible values: 'number_de' - German number formatting
         """
 
-        if format_type == "number_de":
+        if eval("self." + axis +"_format_type == 'number_de'"):
             major_formatter = ticker.FuncFormatter(lambda x, loc: "{:,}".format(int(x)).replace(",","x").replace(".",",").replace("x","."))
 
-        if format_type == "timedelta":
+        if eval("self." + axis + "_format_type == 'timedelta'"):
             if axis == 'x':
                 major_formatter = ticker.FuncFormatter(lambda x, loc: str(datetime.timedelta(seconds=x)))
 
