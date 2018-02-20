@@ -23,7 +23,7 @@ class EventLog:
             
     def _load_csv(self, sep,encoding,convert_format, convert):
         # Create inline function for dateparse to pandas dataframe
-        to_datetime = lambda x: pd.to_datetime(pd.datetime.strptime(x, convert_format))
+        to_datetime = lambda x: pd.datetime.strptime(x, convert_format)
         
         # Load csv
         self.eventlog = pd.read_csv(self.path_ev, sep, encoding = encoding, converters={convert: to_datetime})
