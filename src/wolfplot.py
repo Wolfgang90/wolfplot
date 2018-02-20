@@ -452,7 +452,7 @@ class Plot:
 
 
     def plot_hbar(self, data, key_column_names = None, values_column_names = None, data_label = None, fig_kind = "single"):
-         """
+        """
             Input parameters:
             data (type: pd.core.series.Series (keys as labels and values as bars), pd.core.fram.DataFrame): Data structure containing one columns with the keys and one or more columns with values
             key_column_names (type: str or tuple): column names which should be extracted as key
@@ -495,7 +495,7 @@ class Plot:
                     tmp = data_label[i]
                 ax = self._create_hbar(ax, key[0], values[i], data_label)    
 
-        
+
         self.fig.subplots_adjust(bottom=0.2, left=0.35, top=0.95, right=0.95)
 
 
