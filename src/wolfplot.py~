@@ -12,8 +12,9 @@ import datetime
 
 class Plot:    
     def __init__(self, 
-                 width = 6, 
-                 height = 4.5, 
+                 width = 6.37, 
+                 height = 4.74, 
+                 padding = (0.15,0.15,0.95,0.95),
                  x_label = "", 
                  x_lim=None, 
                  x_tick_width = None, 
@@ -35,11 +36,13 @@ class Plot:
                  grid_ticktype="major",
                  grid_direction="y",
                  bins = None):
+
         
         """
             Input parameters:
             width (type: float): width of overall figure (default: 6)
             height (type: float): height of overall figure (default: 4.5)
+            padding (type: 4-tuple): Padding on each side of chart relative to chart size (bottom,left,top,right)
             x_label(type: string): label displayed on the x-axis (default: empty string)
             x_lim (type: tuple): limits for x-axis in the format (lower limit, upper limit)
             x_tick_width (type: float): width of the major x-tick labels (default: None)
@@ -73,6 +76,7 @@ class Plot:
         # Initialize variables
         self.width = width
         self.height = height
+        self.padding = padding
         self.x_label = x_label
         self.x_format_type = x_format_type
         self.x_lim = x_lim
@@ -225,7 +229,29 @@ class Plot:
             major_formatter = ticker.FuncFormatter(lambda x, loc: str(datetime.timedelta(seconds=x)))
 
         return major_formatter
-    
+
+
+
+    def _create_line_distinct(self, ax, keys, values, data_label = None):
+
+        # Determine number of y-values and create vector representing y-Axis
+        x_pos = np.arange(len(keys)).tolist()
+
+        # Set x and y axis
+        ax = self._set_axis(ax, axis_pos=x_pos, axis_ticklabels = keys.tolist(), axis="x")  
+        ax = self._set_axis(ax, axis="y") 
+        
+        # Set grid lines
+        ax.grid(axis=self.grid_direction,which=self.grid_ticktype)
+           
+        # set lengths of y-tick parameters to 0
+        ax.tick_params(axis='x', length=0)
+
+        # Create data part of the chart
+        ax.plot(x_pos, values,1, label = data_label)
+        
+        return ax
+   
 
 
     def _create_bar(self, ax, keys, values, data_label = None):
@@ -402,6 +428,7 @@ class Plot:
 
 
 
+
     def plot_bar(self, data, key_column_names = None, values_column_names= None, data_label = None, fig_kind = "single"):
         """
             Input parameters:
@@ -446,7 +473,47 @@ class Plot:
                     tmp = data_label[i]
                 ax = self._create_bar(ax, key[0], values[i], data_label)    
 
-        self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
+        self.fig.subplots_adjust(bottom=self.padding[0], left=self.padding[1], top=self.padding[2], right=self.padding[3])
+        
+
+
+
+    def plot_line_distinct(self, data, key_column_names = None, values_column_names= None, data_label = None, fig_kind = "single"):
+        """
+            Input parameters:
+            data (type: pd.core.series.Series (keys as labels and values as bars), pd.core.fram.DataFrame): Data structure containing one columns with the keys and one or more columns with values
+            key_column_names (type: str or tuple): column names which should be extracted as key
+            values_column_names (type: str or tuple): column names which should be extracted as values
+            data_label(type: tuple): only required if there are multiple value columns to label each "layer" of the barplot in the legend or for the titles if small multiples are applied
+            fig_kind (type: string): Describes whether data should be plotted on one or on multiple graphs
+
+            Return parameters: None
+
+            Comment: multiple value columns are not yet implemented
+        """
+
+        if type(data) == pd.core.series.Series:
+            key, values, minimum, maximum = self._series_to_arrays(data)
+        else:
+            # Get key
+            key, key_column_names = self._get_columns_from_data(data, column_names=key_column_names)
+            # Get values
+            values, values_column_names = self._get_columns_from_data(data, column_names=values_column_names)
+
+
+        ax = self._create_figure_and_axes(fig_kind = fig_kind, n_data = values.shape[0], axes_per_row = 4)
+            
+
+        for i,val in enumerate(values):
+            if fig_kind == "single":
+                n_plots = 1
+                if data_label == None:
+                    tmp = None
+                else:
+                    tmp = data_label[i]
+                ax = self._create_line_distinct(ax, key[0], values[i], data_label)    
+
+        self.fig.subplots_adjust(bottom=self.padding[0], left=self.padding[1], top=self.padding[2], right=self.padding[3])
 
 
 
@@ -496,7 +563,7 @@ class Plot:
                 ax = self._create_hbar(ax, key[0], values[i], data_label)    
 
 
-        self.fig.subplots_adjust(bottom=0.2, left=0.35, top=0.95, right=0.95)
+        self.fig.subplots_adjust(bottom=self.padding[0], left=self.padding[1], top=self.padding[2], right=self.padding[3])
 
 
 
@@ -513,7 +580,7 @@ class Plot:
 
         self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
         ax = self._create_histogram(ax,values[0])
-        self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
+        self.fig.subplots_adjust(bottom=self.padding[0], left=self.padding[1], top=self.padding[2], right=self.padding[3])
 
 
     def plot_scatter(self, data, x_column_names, y_column_names, data_label = None, fig_kind = "single", regression = False, axes_per_row = 4):
@@ -562,7 +629,10 @@ class Plot:
                 ax.legend()
             except:
                 pass
-            self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
+
+
+
+        self.fig.subplots_adjust(bottom=self.padding[0], left=self.padding[1], top=self.padding[2], right=self.padding[3])
 
 
 
@@ -583,9 +653,9 @@ class Plot:
         self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
         ax = self._create_boxplot(ax, values, data_label=column_names,display_info=display_info)
         if display_info:
-            self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.9, right=0.95)
+            self.fig.subplots_adjust(bottom=self.padding[0], left=self.padding[1], top=self.padding[2]-0.05, right=self.padding[3])
         else:
-            self.fig.subplots_adjust(bottom=0.2, left=0.2, top=0.95, right=0.95)
+            self.fig.subplots_adjust(bottom=self.padding[0], left=self.padding[1], top=self.padding[2], right=self.padding[3])
 
 
 
