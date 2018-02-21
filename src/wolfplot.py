@@ -241,14 +241,12 @@ class Plot:
         ax = self._set_axis(ax, axis_pos=x_pos, axis_ticklabels = keys.tolist(), axis="x")  
         ax = self._set_axis(ax, axis="y") 
         
-        # Set grid lines
-        ax.grid(axis=self.grid_direction,which=self.grid_ticktype)
            
         # set lengths of y-tick parameters to 0
-        ax.tick_params(axis='x', length=0)
+        #ax.tick_params(axis='x', length=0)
 
         # Create data part of the chart
-        ax.plot(x_pos, values, label = data_label)
+        ax.plot(x_pos, values,"H-", label = data_label)
         
         return ax
    
@@ -511,9 +509,22 @@ class Plot:
                     tmp = None
                 else:
                     tmp = data_label[i]
-                ax = self._create_line_distinct(ax, key[0], values[i], data_label)    
+                ax = self._create_line_distinct(ax, key[0], values[i], data_label=tmp)    
+        # Fit plot into figure
+        if fig_kind == "multiple":
+            self.fig.tight_layout()
+        elif fig_kind == "single":
+            try:
+                ax.legend()
+            except:
+                pass
 
-        self.fig.subplots_adjust(bottom=self.padding[0], left=self.padding[1], top=self.padding[2], right=self.padding[3])
+
+            # Set grid lines
+            ax.grid(axis=self.grid_direction,which=self.grid_ticktype)
+           
+
+            self.fig.subplots_adjust(bottom=self.padding[0], left=self.padding[1], top=self.padding[2], right=self.padding[3])
 
 
 
