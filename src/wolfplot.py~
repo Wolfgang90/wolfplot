@@ -241,8 +241,6 @@ class Plot:
         ax = self._set_axis(ax, axis_pos=x_pos, axis_ticklabels = keys.tolist(), axis="x")  
         ax = self._set_axis(ax, axis="y") 
         
-        # Set grid lines
-        ax.grid(axis=self.grid_direction,which=self.grid_ticktype)
            
         # set lengths of y-tick parameters to 0
         #ax.tick_params(axis='x', length=0)
@@ -330,6 +328,22 @@ class Plot:
         if regression:
             x_reg, y_reg = self._linear_regression(x,y)
             ax.plot(x_reg,y_reg)
+        
+        return ax
+
+    def _create_scatter_distinct(self, ax, x, y, data_label = None, title = False, y_axis_plot = True):
+
+        # Determine number of y-values and create vector representing y-Axis
+        x_pos = np.arange(len(x)).tolist()
+
+        # Set x and y axis
+        ax = self._set_axis(ax, axis_pos=x_pos, axis_ticklabels = x.tolist(), axis="x")  
+        ax = self._set_axis(ax, axis_plot = y_axis_plot,axis="y") 
+        
+        # Set grid lines
+        ax.grid(axis=self.grid_direction,which=self.grid_ticktype)        
+           
+        ax.scatter(x_pos ,y, label=data_label, s = 3, linewidth = 0.0)
         
         return ax
 
@@ -647,6 +661,57 @@ class Plot:
 
         self.fig.subplots_adjust(bottom=self.padding[0], left=self.padding[1], top=self.padding[2], right=self.padding[3])
 
+
+    def plot_scatter_distinct(self, data, x_column_names, y_column_names, data_label = None, fig_kind = "single", regression = False, axes_per_row = 4):
+        """
+            Input parameters:
+            data (type: pd.core.frame.DataFrame): DataFrame from which x and y columns are extracted
+            x_column_names (type: str or tuple): column names which should be extracted for x-values
+            y_column_names (type: str or tuple): column names which should be extracted for y-values
+            data_label(type: tuple): only required if there are multiple x and y columns to label each "layer" of the scatter in the legend or for the titles if small multiples are applied
+            fig_kind (type: string): Describes whether data should be plotted on one or on multiple graphs
+            regression (type: bool): Describes whether a regression line should be plotted in the graph (default: False)
+            axes_per_row(type: int): Number of axes in one row (only applies if fig_kind = 'multiple'
+
+            Return parameters: None
+        """
+        
+        x_values, x_column_names = self._get_columns_from_data(data, column_names=x_column_names)
+        y_values, y_column_names = self._get_columns_from_data(data, column_names=y_column_names)
+        
+
+        ax = self._create_figure_and_axes(fig_kind = fig_kind, n_data = x_values.shape[0], axes_per_row = axes_per_row)
+        
+
+        for i,x_val in enumerate(x_values):
+            if fig_kind == "single":
+                n_plots = 1
+                if data_label == None:
+                    tmp = None
+                else:
+                    tmp = data_label[i]
+                ax = self._create_scatter_distinct(ax ,x = x_values[i],y = y_values[i], data_label = tmp)
+
+            if fig_kind == "multiple":
+                y_axis_plot = True
+                if int(i%axes_per_row)!=0:
+                    y_axis_plot = False
+                
+                ax[int(i/axes_per_row)][int(i%axes_per_row)] = self._create_scatter_distinct(ax[int(i/axes_per_row)][int(i%axes_per_row)] ,x = x_values[i],y = y_values[i] , data_label = data_label[i], title = True , y_axis_plot = y_axis_plot)
+
+                
+        # Fit plot into figure
+        if fig_kind == "multiple":
+            self.fig.tight_layout()
+        elif fig_kind == "single":
+            try:
+                ax.legend()
+            except:
+                pass
+
+
+
+        self.fig.subplots_adjust(bottom=self.padding[0], left=self.padding[1], top=self.padding[2], right=self.padding[3])
 
 
     def plot_boxplot(self, data, column_names = None, display_info=True): 
