@@ -318,7 +318,7 @@ class Plot:
         
         return ax
     
-    def _create_scatter(self, ax, x, y, data_label = None, title = False, y_axis_plot = True, regression = False):
+    def _create_scatter(self, ax, x, y, data_label = None, title = False, y_axis_plot = True, regression = False, alpha = None):
         
         if title:
             ax = self._set_title(ax, data_label)
@@ -330,7 +330,7 @@ class Plot:
         # Set grid lines
         ax.grid(axis=self.grid_direction,which=self.grid_ticktype)        
         
-        ax.scatter(x ,y, label=data_label, s = 3, linewidth = 0.0)
+        ax.scatter(x ,y, label=data_label, alpha=alpha, s = 3, linewidth = 0.0)
         
         if regression:
             x_reg, y_reg = self._linear_regression(x,y)
@@ -627,7 +627,7 @@ class Plot:
         self.fig.subplots_adjust(bottom=self.padding[0], left=self.padding[1], top=self.padding[2], right=self.padding[3])
 
 
-    def plot_scatter(self, data, x_column_names, y_column_names, data_label = None, fig_kind = "single", regression = False, x_jitter = None, y_jitter = None, axes_per_row = 4):
+    def plot_scatter(self, data, x_column_names, y_column_names, data_label = None, fig_kind = "single", regression = False, x_jitter = None, y_jitter = None, alpha = None, axes_per_row = 4):
         """
             Input parameters:
             data (type: pd.core.frame.DataFrame): DataFrame from which x and y columns are extracted
@@ -638,6 +638,7 @@ class Plot:
             x_jitter (type: float): jitter for x-values
             y_jitter (type: float): jitter for y-values
             regression (type: bool): Describes whether a regression line should be plotted in the graph (default: False)
+            alpha (type: float): The alpha blending value, between 0 (transparent and 1 (opaque)
             axes_per_row(type: int): Number of axes in one row (only applies if fig_kind = 'multiple'
 
             Return parameters: None
@@ -666,14 +667,14 @@ class Plot:
                     tmp = None
                 else:
                     tmp = data_label[i]
-                ax = self._create_scatter(ax ,x = x_values[i],y = y_values[i], data_label = tmp, regression = regression)
+                ax = self._create_scatter(ax ,x = x_values[i],y = y_values[i], data_label = tmp, regression = regression, alpha=alpha)
 
             if fig_kind == "multiple":
                 y_axis_plot = True
                 if int(i%axes_per_row)!=0:
                     y_axis_plot = False
                 
-                ax[int(i/axes_per_row)][int(i%axes_per_row)] = self._create_scatter(ax[int(i/axes_per_row)][int(i%axes_per_row)] ,x = x_values[i],y = y_values[i] , data_label = data_label[i], title = True , y_axis_plot = y_axis_plot, regression = regression)
+                ax[int(i/axes_per_row)][int(i%axes_per_row)] = self._create_scatter(ax[int(i/axes_per_row)][int(i%axes_per_row)] ,x = x_values[i],y = y_values[i] , data_label = data_label[i], title = True , y_axis_plot = y_axis_plot, regression = regression, alpha=alpha)
 
                 
         # Fit plot into figure
