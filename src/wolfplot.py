@@ -496,7 +496,6 @@ class Plot:
         data_label = tuple(dataframe_out.columns.tolist())
         dataframe_out = dataframe_out.reset_index()
         return dataframe_out, data_label
-        
 
 
 
@@ -724,23 +723,47 @@ class Plot:
 
         self.fig.subplots_adjust(bottom=self.padding[0], left=self.padding[1], top=self.padding[2], right=self.padding[3])
 
+    def _get_by_values_from_df(self, data, by_column_name, values_column_name):
+        """
+            Gets values from a df based on a by column. Returns an 2-dimensional array with the values.
+        """
 
-    def plot_boxplot(self, data, column_names = None, display_info=True): 
+        # Sort data by by-colum and values
+        data = data.sort_values(by=[by_column_name,values_column_name])
+
+        values = []
+
+        labels = tuple(data[by_column_name].unique().tolist())
+
+        for label in labels:
+            values.append((data[by_column_name].isin([label])[values_column_name].values).tolist())
+        
+        return values, data_label
+
+
+
+    def plot_boxplot(self, data, by_column_name = None, column_names = None, display_info=True): 
         """
             data (type: pd.core.frame.DataFrame): DataFrame from which values are extracted
             column_names (type: str or tuple): column names from which values should be extracted
             display_info (type: bool): if True, mean and median for all boxplots will be displayed above the axes
         """
 
-        values, column_names = self._get_columns_from_data(data, column_names)
+        # If there are by_column_names values are supposed to come from one column and is selected by another by_column values
+        if by_column_name:
+            values, data_label = self._get_by_values_from_df(data, by_column_name,column_names)
 
-        values = np.swapaxes(values,0,1)
 
-        column_names = list(column_names)
+        # If there are only column_names provided, data is supposed to come from one dataframe from potentially multiple columns
+        else:
+            values, data_label = self._get_columns_from_data(data, column_names)
 
+            values = np.swapaxes(values,0,1)
+
+            data_label = list(data_label)
 
         self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
-        ax = self._create_boxplot(ax, values, data_label=column_names,display_info=display_info)
+        ax = self._create_boxplot(ax, values, data_label=data_label,display_info=display_info)
         if display_info:
             self.fig.subplots_adjust(bottom=self.padding[0], left=self.padding[1], top=self.padding[2]-0.05, right=self.padding[3])
         else:
