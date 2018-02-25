@@ -364,7 +364,7 @@ class Plot:
         ax.tick_params(axis='x', length=0)
 
         ax.boxplot(x_data)
-        x_data = np.swapaxes(x_data,0,1)
+        #x_data = np.swapaxes(x_data,0,1)
 
 
         if display_info:
@@ -728,15 +728,12 @@ class Plot:
             Gets values from a df based on a by column. Returns an 2-dimensional array with the values.
         """
 
-        # Sort data by by-colum and values
-        data = data.sort_values(by=[by_column_name,values_column_name])
-
         values = []
 
-        labels = tuple(data[by_column_name].unique().tolist())
+        data_label = tuple(data[by_column_name].unique().tolist())
 
-        for label in labels:
-            values.append((data[by_column_name].isin([label])[values_column_name].values).tolist())
+        for label in data_label:
+            values.append((data[data[by_column_name].isin([label])][values_column_name].values).tolist())
         
         return values, data_label
 
@@ -749,7 +746,11 @@ class Plot:
             display_info (type: bool): if True, mean and median for all boxplots will be displayed above the axes
         """
 
+        # If there are by_column_names values are supposed to come from one column and is selected by another by_column values
         if by_column_name:
+            # Sort data by by-colum and values
+            data = data.sort_values(by=[by_column_name,values_column_name])
+
             values, data_label = self._get_by_values_from_df(data, by_column_name,column_names)
 
 
