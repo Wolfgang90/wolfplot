@@ -757,8 +757,7 @@ class Plot:
         # If there are only column_names provided, data is supposed to come from one dataframe from potentially multiple columns
         else:
             values, data_label = self._get_columns_from_data(data, column_names)
-
-            values = np.swapaxes(values,0,1)
+            values = values.tolist()
 
             data_label = list(data_label)
 

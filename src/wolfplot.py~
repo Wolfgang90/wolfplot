@@ -749,7 +749,7 @@ class Plot:
         # If there are by_column_names values are supposed to come from one column and is selected by another by_column values
         if by_column_name:
             # Sort data by by-colum and values
-            data = data.sort_values(by=[by_column_name,values_column_name])
+            data = data.sort_values(by=[by_column_name,column_names])
 
             values, data_label = self._get_by_values_from_df(data, by_column_name,column_names)
 
@@ -757,12 +757,18 @@ class Plot:
         # If there are only column_names provided, data is supposed to come from one dataframe from potentially multiple columns
         else:
             values, data_label = self._get_columns_from_data(data, column_names)
+            values = values.tolist()
+            #print(values)
 
-            values = np.swapaxes(values,0,1)
+            #values = np.swapaxes(values,0,1)
+            #print(values)
 
             data_label = list(data_label)
 
         self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
+        #print(type(values))
+        #print(len(values))
+        #print(values)
         ax = self._create_boxplot(ax, values, data_label=data_label,display_info=display_info)
         if display_info:
             self.fig.subplots_adjust(bottom=self.padding[0], left=self.padding[1], top=self.padding[2]-0.05, right=self.padding[3])
