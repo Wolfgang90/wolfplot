@@ -12,8 +12,8 @@ import datetime
 
 class Plot:    
     def __init__(self, 
-                 width = 6.37, 
-                 height = 4.74, 
+                 width = 6.379453, 
+                 height = 4.737466, 
                  padding = (0.15,0.15,0.95,0.95),
                  x_label = "", 
                  x_lim=None, 
