@@ -425,6 +425,7 @@ class Plot:
             if type(column_names) != tuple:
                 print("For a dataframe from which more than one column should be selected a tuple with the columns to be selected needs to be provided and is not available")
             else:
+
                 # Go through all column names and get the columns
                 for i, name in enumerate(column_names):
                     if i == 0:
@@ -488,11 +489,18 @@ class Plot:
                 ax = self._create_bar(ax, key[0], values[i], data_label)    
 
         self.fig.subplots_adjust(bottom=self.padding[0], left=self.padding[1], top=self.padding[2], right=self.padding[3])
+
+
+    def _preprocess_df_by_equal_size(self, dataframe, index, columns, values):
+        dataframe_out = dataframe.pivot(index=index, columns=columns,values=values)
+        data_label = tuple(dataframe_out.columns.tolist())
+        dataframe_out = dataframe_out.reset_index()
+        return dataframe_out, data_label
         
 
 
 
-    def plot_line_distinct(self, data, key_column_names = None, values_column_names= None, data_label = None, fig_kind = "single"):
+    def plot_line_distinct(self, data, by_column_name = None, key_column_names = None, values_column_names= None, data_label = None, fig_kind = "single"):
         """
             Input parameters:
             data (type: pd.core.series.Series (keys as labels and values as bars), pd.core.fram.DataFrame): Data structure containing one columns with the keys and one or more columns with values
@@ -509,6 +517,9 @@ class Plot:
         if type(data) == pd.core.series.Series:
             key, values, minimum, maximum = self._series_to_arrays(data)
         else:
+            if by_column_name:
+                data, values_column_names = self._preprocess_df_by_equal_size(data, key_column_names, by_column_name, values_column_names)
+                data_label = values_column_names
             # Get key
             key, key_column_names = self._get_columns_from_data(data, column_names=key_column_names)
             # Get values
