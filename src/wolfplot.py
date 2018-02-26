@@ -104,7 +104,7 @@ class Plot:
             self.buckets = np.arange(bins[0],bins[1],bins[2]).tolist()     
 
         
-        plt.style.use('src/matplotlibmetarc')
+        plt.style.use('./wolfplot/src/matplotlibmetarc')
         
         
     def _linear_regression(self,x,y):

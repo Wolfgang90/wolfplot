@@ -104,7 +104,7 @@ class Plot:
             self.buckets = np.arange(bins[0],bins[1],bins[2]).tolist()     
 
         
-        plt.style.use('src/matplotlibmetarc')
+        plt.style.use('./wolfplot/src/matplotlibmetarc')
         
         
     def _linear_regression(self,x,y):
@@ -376,7 +376,7 @@ class Plot:
         # set lengths of y-tick parameters to 0
         ax.tick_params(axis='x', length=0)
 
-        ax.boxplot(x_data, flierprops = dict(markersize=2, linestype='none'))
+        ax.boxplot(x_data, flierprops = dict(markersize=2, linestyle='none'))
         #x_data = np.swapaxes(x_data,0,1)
 
 
