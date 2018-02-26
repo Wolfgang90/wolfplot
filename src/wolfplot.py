@@ -14,7 +14,7 @@ class Plot:
     def __init__(self, 
                  width = 6.379453, 
                  height = 4.737466, 
-                 padding = (0.15,0.15,0.95,0.95),
+                 padding = (0.1,0.1,0.95,0.95),
                  x_label = "", 
                  x_lim=None, 
                  x_tick_width = None, 
@@ -27,8 +27,8 @@ class Plot:
                  
                  
                  x_format_type = None,
-                 x_rotation=45, 
-                 x_horizontal_alignment="right", 
+                 x_rotation=0, 
+                 x_horizontal_alignment="center", 
                  y_format_type = None,
                  y_rotation=0, 
                  y_horizontal_alignment="right",
@@ -376,7 +376,7 @@ class Plot:
         # set lengths of y-tick parameters to 0
         ax.tick_params(axis='x', length=0)
 
-        ax.boxplot(x_data)
+        ax.boxplot(x_data, flierprops = dict(markersize=2, linestyle='none'))
         #x_data = np.swapaxes(x_data,0,1)
 
 
