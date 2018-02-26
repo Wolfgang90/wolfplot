@@ -378,7 +378,7 @@ class Plot:
             for i,_ in enumerate(data_label):
                 median = float(np.median(x_data[i]))
                 mean = float(np.mean(x_data[i]))
-                ax.text(i+1, ((ax.get_ylim())[1])*1.01, "Durchschnitt:\n" + str(round(mean,1)).replace(".",",") +  "\nMedian:\n" + str(round(median,1)).replace(".",","), horizontalalignment = 'center',fontsize="xx-small", weight = 'semibold')
+                ax.text(i+1, ((ax.get_ylim())[1])*1.01, "Mittel:\n" + str(round(mean,1)).replace(".",",") +  "\nMedian:\n" + str(round(median,1)).replace(".",","), horizontalalignment = 'center',fontsize="xx-small", weight = 'semibold')
                 
 
         ax.set_xticklabels(data_label)
