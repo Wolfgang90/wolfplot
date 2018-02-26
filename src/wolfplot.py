@@ -275,7 +275,7 @@ class Plot:
         ax.tick_params(axis='x', length=0)
 
         # Create data part of the chart
-        ax.bar(x_pos, values,1, label = data_label)
+        ax.bar(x_pos, values,width = 0.8, label = data_label)
         
         return ax
 
@@ -299,7 +299,7 @@ class Plot:
         ax.tick_params(axis='y', length=0)
 
         # Create data part of the chart
-        ax.barh(y_pos, values,1, label = data_label)
+        ax.barh(y_pos, values,height = 0.8, label = data_label)
 
         return ax
 
@@ -378,7 +378,7 @@ class Plot:
             for i,_ in enumerate(data_label):
                 median = float(np.median(x_data[i]))
                 mean = float(np.mean(x_data[i]))
-                ax.text(i+1, ((ax.get_ylim())[1])*1.01, "Mean:\n" + str(round(mean,1)) +  "\nMedian:\n" + str(round(median,1)), horizontalalignment = 'center',fontsize="xx-small", weight = 'semibold')
+                ax.text(i+1, ((ax.get_ylim())[1])*1.01, "Durchschnitt:\n" + str(round(mean,1)).replace(".",",") +  "\nMedian:\n" + str(round(median,1)).replace(".",","), horizontalalignment = 'center',fontsize="xx-small", weight = 'semibold')
                 
 
         ax.set_xticklabels(data_label)
