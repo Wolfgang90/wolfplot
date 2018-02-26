@@ -237,6 +237,12 @@ class Plot:
 
         return major_formatter
 
+    def _cardinal_formatter(self, data_label, axis):
+        if eval("self." + axis +"_format_type == 'number_de'"):
+            data_label = ["{:,}".format(int(label)).replace(",","x").replace(".",",").replace("x",".") for label in data_label]
+        return data_label
+
+
 
 
     def _create_line_distinct(self, ax, keys, values, data_label = None):
@@ -379,7 +385,9 @@ class Plot:
                 median = float(np.median(x_data[i]))
                 mean = float(np.mean(x_data[i]))
                 ax.text(i+1, ((ax.get_ylim())[1])*1.01, "Mittel:\n" + str(round(mean,1)).replace(".",",") +  "\nMedian:\n" + str(round(median,1)).replace(".",","), horizontalalignment = 'center',fontsize="xx-small", weight = 'semibold')
-                
+
+
+        data_label = self._cardinal_formatter(data_label,axis='x')
 
         ax.set_xticklabels(data_label)
 
