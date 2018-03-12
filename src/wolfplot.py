@@ -384,7 +384,8 @@ class Plot:
             for i,_ in enumerate(data_label):
                 median = float(np.median(x_data[i]))
                 mean = float(np.mean(x_data[i]))
-                ax.text(i+1, ((ax.get_ylim())[1])*1.01, "Mittel:\n" + str(round(mean,1)).replace(".",",") +  "\nMedian:\n" + str(round(median,1)).replace(".",","), horizontalalignment = 'center',fontsize="xx-small", weight = 'semibold')
+                n_number = float(len(x_data[i]))
+                ax.text(i+1, ((ax.get_ylim())[1])*1.0125, "Mittel:\n" + str(round(mean,1)).replace(".",",") +  "\nMedian:\n" + str(round(median,1)).replace(".",",") + "\nn:\n" + str(int(n_number)), horizontalalignment = 'center',fontsize="xx-small", weight = 'semibold')
 
 
         data_label = self._cardinal_formatter(data_label,axis='x')
@@ -792,7 +793,7 @@ class Plot:
         self.fig, ax = plt.subplots(1,1,figsize=(self.width,self.height))
         ax = self._create_boxplot(ax, values, data_label=data_label,display_info=display_info)
         if display_info:
-            self.fig.subplots_adjust(bottom=self.padding[0], left=self.padding[1], top=self.padding[2]-0.05, right=self.padding[3])
+            self.fig.subplots_adjust(bottom=self.padding[0], left=self.padding[1], top=self.padding[2]-0.075, right=self.padding[3])
         else:
             self.fig.subplots_adjust(bottom=self.padding[0], left=self.padding[1], top=self.padding[2], right=self.padding[3])
 
