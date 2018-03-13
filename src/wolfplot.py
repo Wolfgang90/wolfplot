@@ -133,6 +133,7 @@ class Plot:
 
     def _jitter_data(self, data, jitter):
         """Data where each iteration is a point."""
+
         data_output = data + np.random.uniform(-jitter, jitter, len(data))
 
         return data_output
@@ -653,9 +654,13 @@ class Plot:
 
             Return parameters: None
         """
+        if x_jitter or y_jitter:
+            data_tmp = data.copy()
+        else:
+            data_tmp = data
         
-        x_values, x_column_names = self._get_columns_from_data(data, column_names=x_column_names)
-        y_values, y_column_names = self._get_columns_from_data(data, column_names=y_column_names)
+        x_values, x_column_names = self._get_columns_from_data(data_tmp, column_names=x_column_names)
+        y_values, y_column_names = self._get_columns_from_data(data_tmp, column_names=y_column_names)
         
         if x_jitter:
             for i,val in enumerate(x_values):
@@ -714,9 +719,14 @@ class Plot:
 
             Return parameters: None
         """
+        if x_jitter or y_jitter:
+            data_tmp = data.copy()
+        else:
+            data_tmp = data
         
-        x_values, x_column_names = self._get_columns_from_data(data, column_names=x_column_names)
-        y_values, y_column_names = self._get_columns_from_data(data, column_names=y_column_names)
+        
+        x_values, x_column_names = self._get_columns_from_data(data_tmp, column_names=x_column_names)
+        y_values, y_column_names = self._get_columns_from_data(data_tmp, column_names=y_column_names)
         
 
         ax = self._create_figure_and_axes(fig_kind = fig_kind, n_data = x_values.shape[0], axes_per_row = axes_per_row)
