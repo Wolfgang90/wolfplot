@@ -1,2 +1,3 @@
 src/*.py*
+src/.*.py*
 src/__pycache__
