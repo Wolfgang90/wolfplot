@@ -152,12 +152,14 @@ class Plot:
             n_plots = 1
 
         if fig_kind == "multiple":            
-            self.fig, ax = plt.subplots(int(n_data/axes_per_row)+1,axes_per_row, figsize=(self.width,self.height))
+            self.fig, ax = plt.subplots(int(n_data/axes_per_row)+1,axes_per_row, figsize=(self.width,self.height), squeeze = False)
             n_plots = (int(n_data/axes_per_row)+1) * axes_per_row         
 
 
             # Set subplot axis without content to invisible
             gap = n_plots - n_data
+            #print(ax)
+            #print(ax[0][0])
             if gap:
                 for i in range(gap):
                     ax[int(n_data/axes_per_row)][axes_per_row-i-1].axis('off')
@@ -266,7 +268,11 @@ class Plot:
    
 
 
-    def _create_bar(self, ax, keys, values, data_label = None):
+    def _create_bar(self, ax, keys, values, data_label = None,  title = False):
+
+        if title:
+            ax = self._set_title(ax, data_label)
+       
 
         # Determine number of y-values and create vector representing y-Axis
         x_pos = np.arange(len(keys)).tolist()
@@ -461,7 +467,7 @@ class Plot:
 
 
 
-    def plot_bar(self, data, key_column_names = None, values_column_names= None, data_label = None, fig_kind = "single"):
+    def plot_bar(self, data, key_column_names = None, values_column_names= None, data_label = None, fig_kind = "single", axes_per_row = 4):
         """
             Input parameters:
             data (type: pd.core.series.Series (keys as labels and values as bars), pd.core.fram.DataFrame): Data structure containing one columns with the keys and one or more columns with values
@@ -484,7 +490,7 @@ class Plot:
             values, values_column_names = self._get_columns_from_data(data, column_names=values_column_names)
 
 
-        ax = self._create_figure_and_axes(fig_kind = fig_kind, n_data = values.shape[0], axes_per_row = 4)
+        ax = self._create_figure_and_axes(fig_kind = fig_kind, n_data = values.shape[0], axes_per_row = axes_per_row)
             
 
         # method for setting better axis limits could be transfered into axis
@@ -503,7 +509,16 @@ class Plot:
                     tmp = None
                 else:
                     tmp = data_label[i]
-                ax = self._create_bar(ax, key[0], values[i], data_label)    
+                ax = self._create_bar(ax, key[0], values[i], data_label)
+
+            if fig_kind == "multiple":
+                y_axis_plot = True
+                if int(i%axes_per_row)!=0:
+                    y_axis_plot = False
+            
+                ax[int(i/axes_per_row)][int(i%axes_per_row)] = self._create_bar(ax[int(i/axes_per_row)][int(i%axes_per_row)] ,key[0], values[i] , data_label = data_label[i], title = True)# , y_axis_plot = y_axis_plot)
+
+
 
         self.fig.subplots_adjust(bottom=self.padding[0], left=self.padding[1], top=self.padding[2], right=self.padding[3])
 
@@ -673,6 +688,7 @@ class Plot:
                 
 
         ax = self._create_figure_and_axes(fig_kind = fig_kind, n_data = x_values.shape[0], axes_per_row = axes_per_row)
+
         
 
         for i,x_val in enumerate(x_values):
