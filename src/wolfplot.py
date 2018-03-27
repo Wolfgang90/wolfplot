@@ -836,8 +836,8 @@ class Plot:
         if file == ".svg":
             self.fig.savefig(path)
         elif file == ".jpg":
-            fig.savefig(path,dpi=500)
+            self.fig.savefig(path,dpi=500)
         elif file == ".png":
-            fig.savefig(path,dpi=500)
+            self.fig.savefig(path,dpi=500)
         else:
             print("This filetype is currently not selected")
