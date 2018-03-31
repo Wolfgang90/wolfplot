@@ -1,6 +1,6 @@
 # wolfplot
 ## Purpose
-`wolfplot` is a high-level plotting framework for `python` built on top of `matplotlib`. It is primarily designed for the use in process mining projects.
+`wolfplot` is a high-level plotting framework for `python` built on top of `matplotlib`. It is primarily designed for the use in process mining projects and focuses on data in `pandas`-datatypes.
 
 ## Getting started
 In order do initialize your work environment, clone or download wolfplot onto your machine.
@@ -10,13 +10,13 @@ All files required for using `wolfplot` are located in the folder `src`. It cont
 * `eventlog.py`: `python` file containing a class for importing process mining eventlogs into `pandas` dataframes
 * `wolfplot.py`: `python` file containing the plotting class built on top of `matplotlib`
 
-Once downloaded one can create a `.ipynb` file in the `wolfplot` directory, open it from `wolfplot` directory  via the command `jupyter notebook <filename>.ipynb` and start using the framework.
+Once downloaded one can create a `.ipynb` file in the directory which also contains `wolfplot`, open it from the console from the working directory via the command `jupyter notebook <filename>.ipynb` and start using the `wolfplot`.
 
 To import all required packages into the notebook, make sure to execute the following in the first code cell:
 
 ```
-from src.eventlog import EventLog
-from src.wolfplot import Plot
+from wolfplot.src.eventlog import EventLog
+from wolfplot.src.wolfplot import Plot
 
 import numpy as np
 import pandas as pd
