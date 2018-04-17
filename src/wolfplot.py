@@ -671,8 +671,13 @@ class Plot:
         """
         if x_jitter or y_jitter:
             data_tmp = data.copy()
+            if x_jitter:
+                data_tmp = data_tmp.astype({x_column_names:"float64"})
+            if y_jitter:
+                data_tmp = data_tmp.astype({y_column_names:"float64"})            
         else:
-            data_tmp = data
+            data_tmp = data            
+
         
         x_values, x_column_names = self._get_columns_from_data(data_tmp, column_names=x_column_names)
         y_values, y_column_names = self._get_columns_from_data(data_tmp, column_names=y_column_names)
