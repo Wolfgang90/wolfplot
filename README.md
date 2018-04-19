@@ -14,6 +14,12 @@ pip install .
 ```
 
 You can now use the package from any direcory on your machine.
+
+To output plots in notebooks type the following in the first line of your notebook:
+```
+%matplotlib inline
+```
+
 For importing the `Plot` module of wolfplot type the following import statement:
 ```
 from wolfplot import Plot
@@ -27,11 +33,6 @@ Currently the stylesheet is not implemented in the package. Therefore you need t
 ```
 import matplotlib.pyplot as plt
 plt.style.use('./matplotlibmetarc')
-```
-
-To output plots in Jupyter Notebooks additionally type:
-```
-%matplotlib inline
 ```
 
 If you want to upgrade wolfplot execute the following command on the command line from the directory `wolfplot`:
