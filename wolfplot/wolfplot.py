@@ -819,10 +819,7 @@ class Plot:
                     name_sort_dict[i] = sort_value
                     sort_value += 1
 
-                print(name_sort_dict)
-
                 data['name_sort'] = data[by_column_name].map(name_sort_dict)
-                #print(data['name_sort'])
                 data = data.sort_values(by=['name_sort',column_names])
 
                 data = data.drop(columns='name_sort')
