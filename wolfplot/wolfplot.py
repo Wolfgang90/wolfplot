@@ -798,17 +798,39 @@ class Plot:
 
 
 
-    def plot_boxplot(self, data, by_column_name = None, column_names = None, display_info=True): 
+    def plot_boxplot(self, data, by_column_name = None, column_names = None, display_info=True, order = None): 
         """
             data (type: pd.core.frame.DataFrame): DataFrame from which values are extracted
+            by_column_name (type: str): column name by which the data should be split into different boxplots
             column_names (type: str or tuple): column names from which values should be extracted
             display_info (type: bool): if True, mean and median for all boxplots will be displayed above the axes
+            order (type: list): If "by_column_name" is used, the boxplots x-axis will be ordered according to the list which has to contain all by_column_name values in the column as a list in the desired order
         """
 
         # If there are by_column_names values are supposed to come from one column and is selected by another by_column values
         if by_column_name:
             # Sort data by by-colum and values
-            data = data.sort_values(by=[by_column_name,column_names])
+            if order:
+
+                # Create sorting column
+                name_sort_dict = {}
+                sort_value = 0
+                for i in order:
+                    name_sort_dict[i] = sort_value
+                    sort_value += 1
+
+                print(name_sort_dict)
+
+                data['name_sort'] = data[by_column_name].map(name_sort_dict)
+                #print(data['name_sort'])
+                data = data.sort_values(by=['name_sort',column_names])
+
+                data = data.drop(columns='name_sort')
+
+
+            else:
+                data = data.sort_values(by=[by_column_name,column_names])
+
 
             values, data_label = self._get_by_values_from_df(data, by_column_name,column_names)
 
