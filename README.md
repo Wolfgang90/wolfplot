@@ -1,4 +1,5 @@
 # wolfplot
+![wolfplot-plot](https://github.com/Wolfgang90/wolfplot/tree/master/examples/01_Bar.svg?sanitize=true)
 ## Purpose
 `wolfplot` is a high-level plotting framework for `python` built on top of `matplotlib`. It is primarily designed for the use in process mining projects and focuses on data in `pandas`-datatypes.
 
@@ -43,7 +44,7 @@ In order to create a plot and save it there are generally three steps.
 
 ### Overview of plot types
 | Plot type        | Call           |
-| ------------- |:-------------:|
+| ------------- |:-------------|
 | Barplot      | `.plot_bar()` |
 | Hbarplot      | `.plot_hbar()` |
 | Histogramplot | `.plot_hist()` |
