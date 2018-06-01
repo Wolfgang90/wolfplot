@@ -8,7 +8,9 @@ import matplotlib as mpl
 import math
 import datetime
 
-mpl.rc_file("matplotlibrc")
+from .style import set_style
+
+
 
 
 class Plot:    
@@ -93,8 +95,9 @@ class Plot:
         self.y_rotation = y_rotation
         self.y_horizontal_alignment = y_horizontal_alignment
         self.grid_direction = grid_direction
-        self.grid_ticktype = grid_ticktype       
+        self.grid_ticktype = grid_ticktype
 
+            
         if bins:
             self.x_lim = (bins[0],bins[1])
             self.x_minor_tick_width = bins[2]
@@ -102,7 +105,14 @@ class Plot:
             self.bins = np.arange(bins[0],bins[1]+1,bins[2]).tolist()
 
             # Determine number of y-values and create vector representing y-Axis
-            self.buckets = np.arange(bins[0],bins[1],bins[2]).tolist()             
+            self.buckets = np.arange(bins[0],bins[1],bins[2]).tolist()   
+            
+        # Set style
+        set_style()   
+            
+ 
+         
+              
         
     def _linear_regression(self,x,y):
 
