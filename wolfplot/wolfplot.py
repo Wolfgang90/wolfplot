@@ -3,11 +3,12 @@ import pandas as pd
 from sklearn import linear_model
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
+import matplotlib as mpl
 
 import math
 import datetime
 
-
+mpl.rc_file("matplotlibrc")
 
 
 class Plot:    
